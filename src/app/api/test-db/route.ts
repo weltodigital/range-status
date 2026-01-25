@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db'
 
 export async function GET() {
   try {
-    console.log('Testing database connection...')
+    console.log('Testing database connection with pooling...')
 
     // Test basic connection
     await prisma.$connect()
