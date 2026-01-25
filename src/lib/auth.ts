@@ -72,16 +72,20 @@ export async function clearSession(): Promise<void> {
 
 export async function authenticateUser(email: string, password: string): Promise<AuthUser | null> {
   try {
+    console.log('Attempting to authenticate user:', email)
     const user = await prisma.user.findUnique({
       where: { email },
       include: { range: true },
     })
 
+    console.log('User found:', user ? 'Yes' : 'No')
     if (!user) {
       return null
     }
 
+    console.log('Verifying password...')
     const isValidPassword = await verifyPassword(password, user.passwordHash)
+    console.log('Password valid:', isValidPassword)
 
     if (!isValidPassword) {
       return null
@@ -93,7 +97,8 @@ export async function authenticateUser(email: string, password: string): Promise
       role: user.role as 'ADMIN' | 'RANGE',
       rangeId: user.rangeId || undefined,
     }
-  } catch {
+  } catch (error) {
+    console.error('Authentication error:', error)
     return null
   }
 }
