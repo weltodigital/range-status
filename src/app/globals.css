@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Touch target improvements for mobile */
+@layer components {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Brand font defaults */
+@layer base {
+  body {
+    color: #0A2239;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #0A2239 !important;
+  }
+
+  p, span, div, label, td, th {
+    color: #0A2239 !important;
+  }
+
+  input, select, textarea {
+    color: #0A2239 !important;
+    background-color: white !important;
+  }
+
+  input::placeholder {
+    color: #8D909B !important;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #26C485;
+    color: #0A2239 !important;
+  }
+
+  option {
+    color: #0A2239 !important;
+    background-color: white !important;
+  }
+
+  .text-gray-500 {
+    color: #8D909B !important;
+  }
+
+  .text-gray-400 {
+    color: #8D909B !important;
+  }
+
+  .text-gray-600 {
+    color: #0A2239 !important;
+  }
+
+  .text-gray-700 {
+    color: #0A2239 !important;
+  }
+
+  .text-gray-900 {
+    color: #0A2239 !important;
+  }
+
+  .text-center .text-gray-500 {
+    color: #8D909B !important;
+  }
+
+  .placeholder-gray-500::placeholder {
+    color: #8D909B !important;
+  }
+
+  .placeholder-gray-400::placeholder {
+    color: #8D909B !important;
+  }
+}
+
+/* Additional overrides for specific contexts where white text should remain */
+@layer components {
+  .bg-primary .text-white,
+  .bg-secondary .text-white,
+  .bg-blue-600 .text-white,
+  .bg-green-600 .text-white,
+  .bg-red-600 .text-white,
+  .bg-yellow-600 .text-white,
+  .bg-gray-600 .text-white,
+  .text-white {
+    color: white !important;
+  }
+
+  .text-white-80 {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .text-white-90 {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .hover-text-white:hover {
+    color: white !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  @page {
+    margin: 0;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print-hidden {
+    display: none !important;
+  }
+  .print-block {
+    display: block !important;
+  }
+}
+
+/* Mobile viewport fixes */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
