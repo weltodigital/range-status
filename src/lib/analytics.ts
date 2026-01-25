@@ -42,7 +42,7 @@ export async function calculateTypicalBusyTimes(rangeId: string): Promise<{
   }
 
   // Map status to score
-  const statusToScore = {
+  const statusToScore: Record<string, number> = {
     QUIET: 1,
     MODERATE: 2,
     BUSY: 3,
@@ -55,7 +55,7 @@ export async function calculateTypicalBusyTimes(rangeId: string): Promise<{
     const date = new Date(event.createdAt)
     const dayOfWeek = date.getDay()
     const hour = date.getHours()
-    const score = statusToScore[event.status]
+    const score = statusToScore[event.status] ?? 1
 
     const key = `${dayOfWeek}-${hour}`
     if (!hourlyData[key]) {

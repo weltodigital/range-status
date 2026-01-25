@@ -45,7 +45,7 @@ export default async function RangePage({ params }: RangePageProps) {
   const lastUpdated = range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null
   const isDataStale = lastUpdated ? isStale(lastUpdated) : true
   const openingHours = range.openingHours
-    ? JSON.parse(range.openingHours) as WeeklyHours
+    ? range.openingHours as unknown as WeeklyHours
     : null
 
   // Calculate typical busy times

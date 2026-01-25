@@ -13,7 +13,8 @@ export async function GET() {
     })
 
     // Get unique areas
-    const areas = [...new Set(ranges.map(range => range.area))].sort()
+    const areaSet = new Set(ranges.map(range => range.area))
+    const areas = Array.from(areaSet).sort()
 
     return NextResponse.json({
       ranges,

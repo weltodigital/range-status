@@ -13,7 +13,7 @@ export default function HoursClient({ range }: HoursClientProps) {
   const router = useRouter()
   const [hours, setHours] = useState<WeeklyHours>(
     range.openingHours
-      ? range.openingHours as WeeklyHours
+      ? range.openingHours as unknown as WeeklyHours
       : DEFAULT_HOURS
   )
   const [loading, setLoading] = useState(false)

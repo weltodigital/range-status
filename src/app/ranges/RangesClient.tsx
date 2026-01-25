@@ -71,8 +71,8 @@ export default function RangesClient() {
     })
     .sort((a, b) => {
       if (sortBy === 'quiet-first') {
-        const statusOrder = { 'QUIET': 0, 'MODERATE': 1, 'BUSY': 2 }
-        const statusDiff = statusOrder[a.status] - statusOrder[b.status]
+        const statusOrder: Record<string, number> = { 'QUIET': 0, 'MODERATE': 1, 'BUSY': 2 }
+        const statusDiff = (statusOrder[a.status] ?? 3) - (statusOrder[b.status] ?? 3)
         if (statusDiff !== 0) return statusDiff
       }
 

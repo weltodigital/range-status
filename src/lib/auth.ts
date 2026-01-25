@@ -90,7 +90,7 @@ export async function authenticateUser(email: string, password: string): Promise
     return {
       id: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as 'ADMIN' | 'RANGE',
       rangeId: user.rangeId || undefined,
     }
   } catch {
