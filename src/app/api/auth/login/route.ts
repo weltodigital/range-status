@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server'
 import { loginSchema } from '@/lib/validations'
-import { authenticateUser, createSession } from '@/lib/auth'
+import { authenticateUserSupabase } from '@/lib/supabase-auth'
+import { createSession } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const validatedData = loginSchema.parse(body)
 
-    const user = await authenticateUser(validatedData.email, validatedData.password)
+    const user = await authenticateUserSupabase(validatedData.email, validatedData.password)
 
     if (!user) {
       return NextResponse.json(
