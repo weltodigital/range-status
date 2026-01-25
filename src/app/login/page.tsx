@@ -57,10 +57,10 @@ export default function LoginPage() {
         <div className="text-center">
           <Logo size="lg" className="mx-auto mb-4" />
           <h2 className="text-3xl font-bold text-white">
-            Sign In
+            Range Status App
           </h2>
           <p className="mt-2 text-white-80">
-            Access your range portal or admin dashboard
+            Sign in to manage your golf driving range
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

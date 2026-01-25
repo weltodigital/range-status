@@ -14,7 +14,7 @@ export default function QRClient({ range }: QRClientProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
-  const publicUrl = `${window.location.origin}/r/${range.slug}`
+  const publicUrl = `https://www.rangestatus.com/r/${range.slug}`
 
   useEffect(() => {
     async function createQR() {

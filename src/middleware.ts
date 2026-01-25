@@ -3,43 +3,62 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const hostname = request.headers.get('host') || ''
 
-  // Get session from cookie
-  const sessionCookie = request.cookies.get('session')
-  let session = null
+  // Check if we're on the main domain or app subdomain
+  const isMainDomain = hostname.includes('www.rangestatus.com') || hostname === 'rangestatus.com'
+  const isAppSubdomain = hostname.includes('app.rangestatus.com')
 
-  if (sessionCookie) {
-    try {
-      session = JSON.parse(sessionCookie.value)
-      // Check if session is expired
-      if (Date.now() > session.expires) {
+  // Redirect admin routes from main domain to app subdomain
+  if (isMainDomain && (pathname.startsWith('/admin') || pathname.startsWith('/portal') || pathname === '/login')) {
+    const appUrl = `https://app.rangestatus.com${pathname}${request.nextUrl.search}`
+    return NextResponse.redirect(appUrl)
+  }
+
+  // Only process auth logic on app subdomain
+  if (isAppSubdomain) {
+    // Get session from cookie
+    const sessionCookie = request.cookies.get('session')
+    let session = null
+
+    if (sessionCookie) {
+      try {
+        session = JSON.parse(sessionCookie.value)
+        // Check if session is expired
+        if (Date.now() > session.expires) {
+          session = null
+        }
+      } catch {
         session = null
       }
-    } catch {
-      session = null
     }
-  }
 
-  // Protected admin routes
-  if (pathname.startsWith('/admin')) {
-    if (!session || session.role !== 'ADMIN') {
+    // Protected admin routes
+    if (pathname.startsWith('/admin')) {
+      if (!session || session.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/login', request.url))
+      }
+    }
+
+    // Protected portal routes
+    if (pathname.startsWith('/portal')) {
+      if (!session || session.role !== 'RANGE') {
+        return NextResponse.redirect(new URL('/login', request.url))
+      }
+    }
+
+    // Redirect to appropriate dashboard if already logged in and visiting login
+    if (pathname === '/login' && session) {
+      if (session.role === 'ADMIN') {
+        return NextResponse.redirect(new URL('/admin/ranges', request.url))
+      } else if (session.role === 'RANGE') {
+        return NextResponse.redirect(new URL('/portal', request.url))
+      }
+    }
+
+    // Redirect root app subdomain to login
+    if (pathname === '/') {
       return NextResponse.redirect(new URL('/login', request.url))
-    }
-  }
-
-  // Protected portal routes
-  if (pathname.startsWith('/portal')) {
-    if (!session || session.role !== 'RANGE') {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-  }
-
-  // Redirect to appropriate dashboard if already logged in and visiting login
-  if (pathname === '/login' && session) {
-    if (session.role === 'ADMIN') {
-      return NextResponse.redirect(new URL('/admin/ranges', request.url))
-    } else if (session.role === 'RANGE') {
-      return NextResponse.redirect(new URL('/portal', request.url))
     }
   }
 
@@ -48,6 +67,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/admin/:path*',
     '/portal/:path*',
     '/login',
