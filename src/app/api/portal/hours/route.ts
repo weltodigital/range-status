@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { updateRangeOpeningHours } from '@/lib/supabase-db'
 import { openingHoursSchema } from '@/lib/validations'
 
 export async function POST(request: Request) {
@@ -17,12 +17,17 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = openingHoursSchema.parse(body.hours)
 
-    const updatedRange = await prisma.range.update({
-      where: { id: session.rangeId },
-      data: {
-        openingHours: validatedData,
-      },
-    })
+    const updatedRange = await updateRangeOpeningHours(
+      session.rangeId,
+      validatedData
+    )
+
+    if (!updatedRange) {
+      return NextResponse.json(
+        { error: 'Failed to update opening hours' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,

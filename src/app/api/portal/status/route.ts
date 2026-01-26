@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { updateRangeStatus } from '@/lib/supabase-db'
 import { statusUpdateSchema } from '@/lib/validations'
 
 export async function POST(request: Request) {
@@ -17,26 +17,19 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = statusUpdateSchema.parse(body)
 
-    const now = new Date()
-
     // Update range status
-    const updatedRange = await prisma.range.update({
-      where: { id: session.rangeId },
-      data: {
-        status: validatedData.status,
-        note: validatedData.note || null,
-        lastUpdatedAt: now,
-      },
-    })
+    const updatedRange = await updateRangeStatus(
+      session.rangeId,
+      validatedData.status,
+      validatedData.note
+    )
 
-    // Create status event
-    await prisma.statusEvent.create({
-      data: {
-        rangeId: session.rangeId,
-        status: validatedData.status,
-        createdAt: now,
-      },
-    })
+    if (!updatedRange) {
+      return NextResponse.json(
+        { error: 'Failed to update status' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,

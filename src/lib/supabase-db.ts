@@ -312,6 +312,112 @@ export async function checkSlugExistsExcluding(slug: string, excludeId: string):
   }
 }
 
+export async function updateRangeStatus(rangeId: string, status: string, note?: string): Promise<Range | null> {
+  try {
+    const now = new Date().toISOString()
+
+    // Update range status
+    const { data: range, error: updateError } = await supabase
+      .from('ranges')
+      .update({
+        status,
+        note: note || null,
+        lastUpdatedAt: now,
+      })
+      .eq('id', rangeId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Error updating range status:', updateError)
+      return null
+    }
+
+    // Create status event
+    const { error: eventError } = await supabase
+      .from('status_events')
+      .insert({
+        rangeId,
+        status,
+        createdAt: now,
+      })
+
+    if (eventError) {
+      console.error('Error creating status event:', eventError)
+    }
+
+    return {
+      ...range,
+      lastUpdatedAt: range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null,
+      createdAt: new Date(range.createdAt),
+      users: []
+    }
+  } catch (error) {
+    console.error('Database query error:', error)
+    return null
+  }
+}
+
+export async function updateRangeOpeningHours(rangeId: string, openingHours: any): Promise<Range | null> {
+  try {
+    const { data: range, error } = await supabase
+      .from('ranges')
+      .update({
+        openingHours,
+      })
+      .eq('id', rangeId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating opening hours:', error)
+      return null
+    }
+
+    return {
+      ...range,
+      lastUpdatedAt: range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null,
+      createdAt: new Date(range.createdAt),
+      users: []
+    }
+  } catch (error) {
+    console.error('Database query error:', error)
+    return null
+  }
+}
+
+export interface PublicRangesResult {
+  ranges: any[]
+  areas: string[]
+}
+
+export async function getPublicRanges(): Promise<PublicRangesResult | null> {
+  try {
+    const { data: ranges, error } = await supabase
+      .from('ranges')
+      .select('*')
+      .eq('isActive', true)
+      .order('lastUpdatedAt', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching public ranges:', error)
+      return null
+    }
+
+    // Get unique areas
+    const areaSet = new Set(ranges?.map(range => range.area) || [])
+    const areas = Array.from(areaSet).sort()
+
+    return {
+      ranges: ranges || [],
+      areas
+    }
+  } catch (error) {
+    console.error('Database query error:', error)
+    return null
+  }
+}
+
 export interface UpdateRangeData {
   name: string
   slug: string
