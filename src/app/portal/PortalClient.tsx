@@ -1,14 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import { Range } from '@prisma/client'
 import StatusButton from '@/components/StatusButton'
 import { formatTimeAgo, isStale } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Logo from '@/components/Logo'
 
+interface RangeType {
+  id: string
+  name: string
+  slug: string
+  area: string
+  town: string | null
+  status: string
+  note?: string | null
+  lastUpdatedAt: Date | null
+  openingHours?: any
+  isActive: boolean
+  createdAt: Date
+}
+
 interface PortalClientProps {
-  range: Range
+  range: RangeType
 }
 
 export default function PortalClient({ range: initialRange }: PortalClientProps) {

@@ -48,7 +48,11 @@ export function middleware(request: NextRequest) {
 
     // Redirect to dashboard if already logged in and visiting login
     if (pathname === '/login' && session) {
-      return NextResponse.redirect(new URL('/', request.url))
+      if (session.role === 'ADMIN') {
+        return NextResponse.redirect(new URL('/admin', request.url))
+      } else {
+        return NextResponse.redirect(new URL('/', request.url))
+      }
     }
 
     // Redirect root app subdomain to login if not authenticated

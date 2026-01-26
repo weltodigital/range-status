@@ -3,9 +3,9 @@ import { headers } from 'next/headers'
 import { getSession } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import RangesClient from '@/components/RangesClient'
-import AdminRangesClient from '@/app/admin/ranges/AdminRangesClient'
+import PortalClient from '@/app/portal/PortalClient'
 import Logo from '@/components/Logo'
-import { getAllRanges } from '@/lib/supabase-db'
+import { getRangeById } from '@/lib/supabase-db'
 
 export const metadata = {
   title: 'Golf Driving Ranges - Range Status',
@@ -26,12 +26,21 @@ export default async function HomePage() {
     }
 
     if (session.role === 'ADMIN') {
-      // Show admin dashboard
-      const ranges = await getAllRanges()
-      return <AdminRangesClient ranges={ranges} />
+      // Redirect admin to /admin
+      redirect('/admin')
     } else if (session.role === 'RANGE') {
-      // Redirect to portal dashboard
-      redirect('/portal')
+      // Show portal directly for range owners (they get the clean URL)
+      if (!session.rangeId) {
+        redirect('/login')
+      }
+
+      const range = await getRangeById(session.rangeId)
+
+      if (!range || !range.isActive) {
+        redirect('/login')
+      }
+
+      return <PortalClient range={range} />
     }
   }
 
