@@ -225,10 +225,15 @@ export async function checkEmailExists(email: string): Promise<boolean> {
 
 export async function createRangeWithUser(data: CreateRangeData): Promise<CreateRangeResult | null> {
   try {
+    // Generate UUID for range
+    const { data: uuidResult } = await supabase.rpc('gen_random_uuid')
+    const rangeId = uuidResult || crypto.randomUUID()
+
     // Create range first
     const { data: range, error: rangeError } = await supabase
       .from('ranges')
       .insert({
+        id: rangeId,
         name: data.name,
         slug: data.slug,
         area: data.area,
@@ -246,10 +251,13 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
 
     // Hash password and create user
     const passwordHash = await bcrypt.hash(data.password, 12)
+    const { data: userUuidResult } = await supabase.rpc('gen_random_uuid')
+    const userId = userUuidResult || crypto.randomUUID()
 
     const { data: user, error: userError } = await supabase
       .from('users')
       .insert({
+        id: userId,
         email: data.email,
         passwordHash,
         role: 'RANGE',
