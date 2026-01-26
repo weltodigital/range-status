@@ -33,31 +33,26 @@ export function middleware(request: NextRequest) {
       }
     }
 
-    // Protected admin routes
+    // Keep admin and portal routes protected for direct access
     if (pathname.startsWith('/admin')) {
       if (!session || session.role !== 'ADMIN') {
         return NextResponse.redirect(new URL('/login', request.url))
       }
     }
 
-    // Protected portal routes
     if (pathname.startsWith('/portal')) {
       if (!session || session.role !== 'RANGE') {
         return NextResponse.redirect(new URL('/login', request.url))
       }
     }
 
-    // Redirect to appropriate dashboard if already logged in and visiting login
+    // Redirect to dashboard if already logged in and visiting login
     if (pathname === '/login' && session) {
-      if (session.role === 'ADMIN') {
-        return NextResponse.redirect(new URL('/admin/ranges', request.url))
-      } else if (session.role === 'RANGE') {
-        return NextResponse.redirect(new URL('/portal', request.url))
-      }
+      return NextResponse.redirect(new URL('/', request.url))
     }
 
-    // Redirect root app subdomain to login
-    if (pathname === '/') {
+    // Redirect root app subdomain to login if not authenticated
+    if (pathname === '/' && !session) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
@@ -67,9 +62,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/',
-    '/admin/:path*',
-    '/portal/:path*',
-    '/login',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
