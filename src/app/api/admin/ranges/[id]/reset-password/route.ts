@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getSession, hashPassword } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { getSession } from '@/lib/auth'
+import { resetRangeUserPassword } from '@/lib/supabase-db'
 import { z } from 'zod'
 
 const resetPasswordSchema = z.object({
@@ -25,27 +25,15 @@ export async function POST(
     const body = await request.json()
     const { password } = resetPasswordSchema.parse(body)
 
-    // Find the range's portal user
-    const user = await prisma.user.findFirst({
-      where: {
-        rangeId: id,
-        role: 'RANGE',
-      },
-    })
+    // Reset password
+    const success = await resetRangeUserPassword(id, password)
 
-    if (!user) {
+    if (!success) {
       return NextResponse.json(
-        { error: 'Portal user not found' },
+        { error: 'Portal user not found or password reset failed' },
         { status: 404 }
       )
     }
-
-    // Update password
-    const passwordHash = await hashPassword(password)
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { passwordHash },
-    })
 
     return NextResponse.json({
       success: true,

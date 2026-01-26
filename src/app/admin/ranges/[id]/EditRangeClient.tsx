@@ -11,8 +11,9 @@ interface RangeWithUsers {
   area: string
   town: string | null
   status: string
-  note: string | null
+  note?: string | null
   lastUpdatedAt: Date | null
+  openingHours?: any
   isActive: boolean
   createdAt: Date
   users: {

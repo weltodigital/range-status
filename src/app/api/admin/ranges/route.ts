@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
-import { hashPassword } from '@/lib/auth'
+import { checkSlugExists, checkEmailExists, createRangeWithUser } from '@/lib/supabase-db'
 import { rangeSchema, createRangeUserSchema } from '@/lib/validations'
 
 export async function POST(request: Request) {
@@ -32,11 +31,8 @@ export async function POST(request: Request) {
     })
 
     // Check if slug is unique
-    const existingRange = await prisma.range.findUnique({
-      where: { slug: rangeData.slug },
-    })
-
-    if (existingRange) {
+    const slugExists = await checkSlugExists(rangeData.slug)
+    if (slugExists) {
       return NextResponse.json(
         { error: 'Slug already exists' },
         { status: 400 }
@@ -44,44 +40,30 @@ export async function POST(request: Request) {
     }
 
     // Check if email is unique
-    const existingUser = await prisma.user.findUnique({
-      where: { email: userData.email },
-    })
-
-    if (existingUser) {
+    const emailExists = await checkEmailExists(userData.email)
+    if (emailExists) {
       return NextResponse.json(
         { error: 'Email already exists' },
         { status: 400 }
       )
     }
 
-    // Create range and user in a transaction
-    const result = await prisma.$transaction(async (tx) => {
-      // Create range
-      const range = await tx.range.create({
-        data: {
-          name: rangeData.name,
-          slug: rangeData.slug,
-          area: rangeData.area,
-          town: rangeData.town || null,
-          status: 'QUIET',
-          isActive: true,
-        },
-      })
-
-      // Create user
-      const passwordHash = await hashPassword(userData.password)
-      const user = await tx.user.create({
-        data: {
-          email: userData.email,
-          passwordHash,
-          role: 'RANGE',
-          rangeId: range.id,
-        },
-      })
-
-      return { range, user }
+    // Create range and user
+    const result = await createRangeWithUser({
+      name: rangeData.name,
+      slug: rangeData.slug,
+      area: rangeData.area,
+      town: rangeData.town || null,
+      email: userData.email,
+      password: userData.password,
     })
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Failed to create range' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,

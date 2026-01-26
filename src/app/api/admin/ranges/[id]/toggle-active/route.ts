@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { toggleRangeActiveStatus } from '@/lib/supabase-db'
 
 export async function POST(
   request: Request,
@@ -18,31 +18,15 @@ export async function POST(
 
     const { id } = await params
 
-    // Get current range
-    const currentRange = await prisma.range.findUnique({
-      where: { id },
-    })
+    // Toggle active status
+    const updatedRange = await toggleRangeActiveStatus(id)
 
-    if (!currentRange) {
+    if (!updatedRange) {
       return NextResponse.json(
-        { error: 'Range not found' },
+        { error: 'Range not found or toggle failed' },
         { status: 404 }
       )
     }
-
-    // Toggle active status
-    const updatedRange = await prisma.range.update({
-      where: { id },
-      data: {
-        isActive: !currentRange.isActive,
-      },
-      include: {
-        users: {
-          where: { role: 'RANGE' },
-          select: { id: true, email: true },
-        },
-      },
-    })
 
     return NextResponse.json({
       success: true,

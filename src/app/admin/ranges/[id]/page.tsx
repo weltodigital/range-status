@@ -1,5 +1,5 @@
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { getRangeById } from '@/lib/supabase-db'
 import { redirect, notFound } from 'next/navigation'
 import EditRangeClient from './EditRangeClient'
 
@@ -21,15 +21,7 @@ export default async function EditRangePage({ params }: EditRangePageProps) {
 
   const { id } = await params
 
-  const range = await prisma.range.findUnique({
-    where: { id },
-    include: {
-      users: {
-        where: { role: 'RANGE' },
-        select: { id: true, email: true },
-      },
-    },
-  })
+  const range = await getRangeById(id)
 
   if (!range) {
     notFound()

@@ -1,5 +1,5 @@
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { getAllRanges } from '@/lib/supabase-db'
 import { redirect } from 'next/navigation'
 import AdminRangesClient from './AdminRangesClient'
 
@@ -15,15 +15,7 @@ export default async function AdminRangesPage() {
     redirect('/login')
   }
 
-  const ranges = await prisma.range.findMany({
-    include: {
-      users: {
-        where: { role: 'RANGE' },
-        select: { id: true, email: true },
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-  })
+  const ranges = await getAllRanges()
 
   return <AdminRangesClient ranges={ranges} />
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { checkSlugExistsExcluding, updateRange } from '@/lib/supabase-db'
 import { rangeSchema } from '@/lib/validations'
 
 export async function PUT(
@@ -29,14 +29,8 @@ export async function PUT(
     })
 
     // Check if slug is unique (excluding current range)
-    const existingRange = await prisma.range.findFirst({
-      where: {
-        slug: rangeData.slug,
-        id: { not: id },
-      },
-    })
-
-    if (existingRange) {
+    const slugExists = await checkSlugExistsExcluding(rangeData.slug, id)
+    if (slugExists) {
       return NextResponse.json(
         { error: 'Slug already exists' },
         { status: 400 }
@@ -44,21 +38,19 @@ export async function PUT(
     }
 
     // Update range
-    const updatedRange = await prisma.range.update({
-      where: { id },
-      data: {
-        name: rangeData.name,
-        slug: rangeData.slug,
-        area: rangeData.area,
-        town: rangeData.town || null,
-      },
-      include: {
-        users: {
-          where: { role: 'RANGE' },
-          select: { id: true, email: true },
-        },
-      },
+    const updatedRange = await updateRange(id, {
+      name: rangeData.name,
+      slug: rangeData.slug,
+      area: rangeData.area,
+      town: rangeData.town || null,
     })
+
+    if (!updatedRange) {
+      return NextResponse.json(
+        { error: 'Failed to update range' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
