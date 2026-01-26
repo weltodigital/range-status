@@ -1,15 +1,8 @@
 import { cookies } from 'next/headers'
 import * as bcrypt from 'bcryptjs'
-import { PrismaClient } from '@prisma/client'
+import { authenticateUser as supabaseAuthenticateUser, type AuthUser } from '@/lib/supabase-db'
 
-const prisma = new PrismaClient()
-
-export interface AuthUser {
-  id: string
-  email: string
-  role: 'ADMIN' | 'RANGE'
-  rangeId?: string
-}
+export type { AuthUser }
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
@@ -71,34 +64,5 @@ export async function clearSession(): Promise<void> {
 }
 
 export async function authenticateUser(email: string, password: string): Promise<AuthUser | null> {
-  try {
-    console.log('Attempting to authenticate user:', email)
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { range: true },
-    })
-
-    console.log('User found:', user ? 'Yes' : 'No')
-    if (!user) {
-      return null
-    }
-
-    console.log('Verifying password...')
-    const isValidPassword = await verifyPassword(password, user.passwordHash)
-    console.log('Password valid:', isValidPassword)
-
-    if (!isValidPassword) {
-      return null
-    }
-
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role as 'ADMIN' | 'RANGE',
-      rangeId: user.rangeId || undefined,
-    }
-  } catch (error) {
-    console.error('Authentication error:', error)
-    return null
-  }
+  return supabaseAuthenticateUser(email, password)
 }

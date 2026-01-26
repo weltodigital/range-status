@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Range } from '@prisma/client'
+import { Range } from '@/lib/supabase-db'
 import { formatTimeAgo, isStale, getStatusColorLight } from '@/lib/utils'
 
 interface RangeCardProps {

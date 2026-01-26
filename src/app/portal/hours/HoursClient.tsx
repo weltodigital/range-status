@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Range } from '@prisma/client'
+import { Range } from '@/lib/supabase-db'
 import { useRouter } from 'next/navigation'
 import { WeeklyHours, DayHours, DEFAULT_HOURS, DAYS, DAY_NAMES } from '@/lib/hours'
 

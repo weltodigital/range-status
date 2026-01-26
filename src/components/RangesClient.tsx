@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
-import { Range } from '@prisma/client'
+import { Range } from '@/lib/supabase-db'
 import RangeCard from '@/components/RangeCard'
 
 type SortOption = 'recent' | 'quiet-first'

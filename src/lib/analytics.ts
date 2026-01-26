@@ -1,4 +1,4 @@
-import { prisma } from './db'
+import { getStatusEvents } from '@/lib/supabase-db'
 
 export interface BusyTimeData {
   dayOfWeek: number // 0 = Sunday, 1 = Monday, etc.
@@ -21,17 +21,7 @@ export async function calculateTypicalBusyTimes(rangeId: string): Promise<{
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  const statusEvents = await prisma.statusEvent.findMany({
-    where: {
-      rangeId,
-      createdAt: {
-        gte: thirtyDaysAgo,
-      },
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  })
+  const statusEvents = await getStatusEvents(rangeId, thirtyDaysAgo)
 
   if (statusEvents.length < 30) {
     return {

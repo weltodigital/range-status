@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/db'
+import { getRangeBySlug } from '@/lib/supabase-db'
 import { formatTimeAgo, isStale, getStatusColor } from '@/lib/utils'
 import { WeeklyHours } from '@/lib/hours'
 import { calculateTypicalBusyTimes } from '@/lib/analytics'
@@ -15,9 +15,7 @@ interface RangePageProps {
 export async function generateMetadata({ params }: RangePageProps) {
   const { slug } = await params
 
-  const range = await prisma.range.findUnique({
-    where: { slug, isActive: true },
-  })
+  const range = await getRangeBySlug(slug)
 
   if (!range) {
     return {
@@ -34,9 +32,7 @@ export async function generateMetadata({ params }: RangePageProps) {
 export default async function RangePage({ params }: RangePageProps) {
   const { slug } = await params
 
-  const range = await prisma.range.findUnique({
-    where: { slug, isActive: true },
-  })
+  const range = await getRangeBySlug(slug)
 
   if (!range) {
     notFound()

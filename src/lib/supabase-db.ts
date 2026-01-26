@@ -418,6 +418,97 @@ export async function getPublicRanges(): Promise<PublicRangesResult | null> {
   }
 }
 
+export interface AuthUser {
+  id: string
+  email: string
+  role: 'ADMIN' | 'RANGE'
+  rangeId?: string
+}
+
+export async function authenticateUser(email: string, password: string): Promise<AuthUser | null> {
+  try {
+    console.log('Attempting to authenticate user:', email)
+
+    // Get user by email
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, passwordHash, role, rangeId')
+      .eq('email', email)
+      .single()
+
+    console.log('User found:', user ? 'Yes' : 'No')
+    if (error || !user) {
+      console.error('Error finding user:', error)
+      return null
+    }
+
+    console.log('Verifying password...')
+    const isValidPassword = await bcrypt.compare(password, user.passwordHash)
+    console.log('Password valid:', isValidPassword)
+
+    if (!isValidPassword) {
+      return null
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role as 'ADMIN' | 'RANGE',
+      rangeId: user.rangeId || undefined,
+    }
+  } catch (error) {
+    console.error('Authentication error:', error)
+    return null
+  }
+}
+
+export async function getRangeBySlug(slug: string): Promise<any | null> {
+  try {
+    const { data: range, error } = await supabase
+      .from('ranges')
+      .select('*')
+      .eq('slug', slug)
+      .eq('isActive', true)
+      .single()
+
+    if (error) {
+      console.error('Error fetching range by slug:', error)
+      return null
+    }
+
+    return range
+  } catch (error) {
+    console.error('Database query error:', error)
+    return null
+  }
+}
+
+export async function getStatusEvents(rangeId: string, from?: Date): Promise<any[]> {
+  try {
+    let query = supabase
+      .from('status_events')
+      .select('*')
+      .eq('rangeId', rangeId)
+      .order('createdAt', { ascending: true })
+
+    if (from) {
+      query = query.gte('createdAt', from.toISOString())
+    }
+
+    const { data: statusEvents, error } = await query
+
+    if (error) {
+      console.error('Error fetching status events:', error)
+      return []
+    }
+
+    return statusEvents || []
+  } catch (error) {
+    console.error('Database query error:', error)
+    return []
+  }
+}
+
 export interface UpdateRangeData {
   name: string
   slug: string

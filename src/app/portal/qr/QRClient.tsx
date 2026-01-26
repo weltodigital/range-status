@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Range } from '@prisma/client'
+import { Range } from '@/lib/supabase-db'
 import { useRouter } from 'next/navigation'
 import { generateQRCode } from '@/lib/qr'
 
