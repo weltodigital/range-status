@@ -462,26 +462,6 @@ export async function authenticateUser(email: string, password: string): Promise
   }
 }
 
-export async function getRangeBySlug(slug: string): Promise<any | null> {
-  try {
-    const { data: range, error } = await supabase
-      .from('ranges')
-      .select('*')
-      .eq('slug', slug)
-      .eq('isActive', true)
-      .single()
-
-    if (error) {
-      console.error('Error fetching range by slug:', error)
-      return null
-    }
-
-    return range
-  } catch (error) {
-    console.error('Database query error:', error)
-    return null
-  }
-}
 
 export async function getStatusEvents(rangeId: string, from?: Date): Promise<any[]> {
   try {
