@@ -7,7 +7,8 @@ export const loginSchema = z.object({
 
 export const statusUpdateSchema = z.object({
   status: z.enum(['QUIET', 'MODERATE', 'BUSY']),
-  note: z.string().max(60, 'Note must be 60 characters or less').optional(),
+  note: z.string().max(60, 'Note must be 60 characters or less').nullable().optional()
+    .transform(val => val === '' ? null : val),
 })
 
 export const timeSchema = z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Time must be in HH:MM format')

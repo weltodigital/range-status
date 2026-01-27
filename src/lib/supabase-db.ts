@@ -323,7 +323,7 @@ export async function checkSlugExistsExcluding(slug: string, excludeId: string):
   }
 }
 
-export async function updateRangeStatus(rangeId: string, status: string, note?: string): Promise<Range | null> {
+export async function updateRangeStatus(rangeId: string, status: string, note?: string | null): Promise<Range | null> {
   try {
     const now = new Date().toISOString()
 
