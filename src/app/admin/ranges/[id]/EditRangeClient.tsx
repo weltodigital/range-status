@@ -313,35 +313,43 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                     <p className="text-sm text-gray-900 font-medium">{portalUser.email}</p>
                   </div>
 
-                  <div>
-                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                      Reset Password
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        id="newPassword"
-                        type="text"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="Enter new password"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                  {!range.isActive ? (
+                    <div>
+                      <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                        Reset Password
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          id="newPassword"
+                          type="text"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={generateRandomPassword}
+                          className="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                          Generate
+                        </button>
+                      </div>
                       <button
-                        type="button"
-                        onClick={generateRandomPassword}
-                        className="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        onClick={handleResetPassword}
+                        disabled={loading || !newPassword.trim()}
+                        className="mt-2 w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50"
                       >
-                        Generate
+                        Reset Password
                       </button>
                     </div>
-                    <button
-                      onClick={handleResetPassword}
-                      disabled={loading || !newPassword.trim()}
-                      className="mt-2 w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50"
-                    >
-                      Reset Password
-                    </button>
-                  </div>
+                  ) : (
+                    <div className="bg-gray-50 border border-gray-200 rounded p-3">
+                      <p className="text-sm text-gray-600">
+                        Password changes are managed by the range owner through their portal settings once the range is active.
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-sm text-gray-600">No portal user found</p>

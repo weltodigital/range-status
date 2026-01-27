@@ -8,6 +8,9 @@ import TypicalBusyTimes from '@/components/TypicalBusyTimes'
 import Logo from '@/components/Logo'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface RangePageProps {
   params: { slug: string }
 }

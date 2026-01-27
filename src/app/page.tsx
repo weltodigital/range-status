@@ -7,6 +7,9 @@ import PortalClient from '@/app/portal/PortalClient'
 import Logo from '@/components/Logo'
 import { getRangeById } from '@/lib/supabase-db'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata = {
   title: 'Golf Driving Ranges - Range Status',
   description: 'Find golf driving ranges near you and check how busy they are in real-time',

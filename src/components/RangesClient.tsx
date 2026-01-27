@@ -21,6 +21,11 @@ export default function RangesClient() {
 
   useEffect(() => {
     fetchRanges()
+
+    // Set up auto-refresh every 30 seconds for real-time updates
+    const interval = setInterval(fetchRanges, 30000)
+
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
