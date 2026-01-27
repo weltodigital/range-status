@@ -180,6 +180,16 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
           </button>
         </div>
 
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4 text-secondary">Billing & Subscription</h2>
+          <button
+            onClick={() => router.push('/portal/billing')}
+            className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+          >
+            Manage Subscription
+          </button>
+        </div>
+
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-lg font-semibold mb-4 text-secondary">Account Settings</h2>
           <button

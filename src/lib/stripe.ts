@@ -1,0 +1,74 @@
+import Stripe from 'stripe'
+
+// Initialize Stripe with your secret key
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-12-15.clover',
+  typescript: true,
+})
+
+// Pricing configuration
+export const STRIPE_CONFIG = {
+  monthlyPriceId: process.env.STRIPE_MONTHLY_PRICE_ID!,
+  yearlyPriceId: process.env.STRIPE_YEARLY_PRICE_ID!,
+  trialDays: 7,
+  currency: 'gbp',
+  prices: {
+    monthly: 2900, // £29.00 in pence
+    yearly: 29000,  // £290.00 in pence
+  }
+}
+
+// Helper function to create checkout session
+export async function createCheckoutSession(
+  rangeId: string,
+  plan: 'monthly' | 'yearly',
+  userEmail: string
+) {
+  const priceId = plan === 'yearly'
+    ? STRIPE_CONFIG.yearlyPriceId
+    : STRIPE_CONFIG.monthlyPriceId
+
+  const session = await stripe.checkout.sessions.create({
+    customer_email: userEmail,
+    payment_method_types: ['card'],
+    line_items: [{
+      price: priceId,
+      quantity: 1,
+    }],
+    mode: 'subscription',
+    subscription_data: {
+      trial_period_days: STRIPE_CONFIG.trialDays,
+      metadata: {
+        rangeId,
+        plan
+      }
+    },
+    success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/portal/billing?success=true`,
+    cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/portal/billing?canceled=true`,
+    metadata: {
+      rangeId,
+      plan
+    }
+  })
+
+  return session
+}
+
+// Helper function to create billing portal session
+export async function createBillingPortalSession(customerId: string) {
+  const session = await stripe.billingPortal.sessions.create({
+    customer: customerId,
+    return_url: `${process.env.NEXT_PUBLIC_DOMAIN}/portal/billing`
+  })
+
+  return session
+}
+
+// Helper function to verify webhook signature
+export function verifyWebhookSignature(
+  body: string,
+  signature: string,
+  secret: string
+): Stripe.Event {
+  return stripe.webhooks.constructEvent(body, signature, secret)
+}

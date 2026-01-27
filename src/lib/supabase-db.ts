@@ -32,6 +32,11 @@ export interface Range {
   openingHours?: any
   isActive: boolean
   createdAt: Date
+  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionStatus?: 'active' | 'expired' | 'cancelled'
+  subscriptionExpiry?: Date | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
   users: RangeUser[]
 }
 
@@ -229,7 +234,10 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
     const { data: uuidResult } = await supabase.rpc('gen_random_uuid')
     const rangeId = uuidResult || crypto.randomUUID()
 
-    // Create range first
+    // Create range first with trial subscription
+    const trialExpiry = new Date()
+    trialExpiry.setDate(trialExpiry.getDate() + 7) // 7-day trial
+
     const { data: range, error: rangeError } = await supabase
       .from('ranges')
       .insert({
@@ -240,6 +248,9 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
         town: data.town || null,
         status: 'QUIET',
         isActive: true,
+        subscriptionType: 'trial',
+        subscriptionStatus: 'active',
+        subscriptionExpiry: trialExpiry.toISOString(),
       })
       .select()
       .single()
@@ -657,5 +668,57 @@ export async function changeUserPassword(userId: string, currentPassword: string
   } catch (error) {
     console.error('Database query error:', error)
     return false
+  }
+}
+
+export async function updateRangeSubscription(rangeId: string, subscriptionData: {
+  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionStatus?: 'active' | 'expired' | 'cancelled'
+  subscriptionExpiry?: Date | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+}): Promise<Range | null> {
+  try {
+    // Build update object with only provided fields
+    const updateData: any = {}
+
+    if (subscriptionData.subscriptionType !== undefined) {
+      updateData.subscriptionType = subscriptionData.subscriptionType
+    }
+    if (subscriptionData.subscriptionStatus !== undefined) {
+      updateData.subscriptionStatus = subscriptionData.subscriptionStatus
+    }
+    if (subscriptionData.subscriptionExpiry !== undefined) {
+      updateData.subscriptionExpiry = subscriptionData.subscriptionExpiry?.toISOString() || null
+    }
+    if (subscriptionData.stripeCustomerId !== undefined) {
+      updateData.stripeCustomerId = subscriptionData.stripeCustomerId
+    }
+    if (subscriptionData.stripeSubscriptionId !== undefined) {
+      updateData.stripeSubscriptionId = subscriptionData.stripeSubscriptionId
+    }
+
+    const { data: range, error } = await supabase
+      .from('ranges')
+      .update(updateData)
+      .eq('id', rangeId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating subscription:', error)
+      return null
+    }
+
+    return {
+      ...range,
+      lastUpdatedAt: range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null,
+      createdAt: new Date(range.createdAt),
+      subscriptionExpiry: range.subscriptionExpiry ? new Date(range.subscriptionExpiry) : null,
+      users: []
+    }
+  } catch (error) {
+    console.error('Database query error:', error)
+    return null
   }
 }
