@@ -1,15 +1,15 @@
 import Stripe from 'stripe'
 
 // Initialize Stripe with your secret key
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2025-12-15.clover',
   typescript: true,
 })
 
 // Pricing configuration
 export const STRIPE_CONFIG = {
-  monthlyPriceId: process.env.STRIPE_MONTHLY_PRICE_ID!,
-  yearlyPriceId: process.env.STRIPE_YEARLY_PRICE_ID!,
+  monthlyPriceId: process.env.STRIPE_MONTHLY_PRICE_ID || '',
+  yearlyPriceId: process.env.STRIPE_YEARLY_PRICE_ID || '',
   trialDays: 7,
   currency: 'gbp',
   prices: {
@@ -24,9 +24,17 @@ export async function createCheckoutSession(
   plan: 'monthly' | 'yearly',
   userEmail: string
 ) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
+  }
+
   const priceId = plan === 'yearly'
     ? STRIPE_CONFIG.yearlyPriceId
     : STRIPE_CONFIG.monthlyPriceId
+
+  if (!priceId) {
+    throw new Error(`Stripe price ID not configured for ${plan} plan`)
+  }
 
   const session = await stripe.checkout.sessions.create({
     customer_email: userEmail,
@@ -56,6 +64,10 @@ export async function createCheckoutSession(
 
 // Helper function to create billing portal session
 export async function createBillingPortalSession(customerId: string) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
+  }
+
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
     return_url: `${process.env.NEXT_PUBLIC_DOMAIN}/portal/billing`
@@ -70,5 +82,9 @@ export function verifyWebhookSignature(
   signature: string,
   secret: string
 ): Stripe.Event {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
+  }
+
   return stripe.webhooks.constructEvent(body, signature, secret)
 }
