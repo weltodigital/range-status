@@ -5,6 +5,7 @@ import { WeeklyHours } from '@/lib/hours'
 import { calculateTypicalBusyTimes } from '@/lib/analytics'
 import OpeningHours from '@/components/OpeningHours'
 import TypicalBusyTimes from '@/components/TypicalBusyTimes'
+import MapWrapper from '@/components/MapWrapper'
 import Logo from '@/components/Logo'
 import Link from 'next/link'
 
@@ -100,6 +101,44 @@ export default async function RangePage({ params }: RangePageProps) {
             )}
           </div>
         </div>
+
+        {/* Address and Map */}
+        {(range.address || range.postcode || (range.latitude && range.longitude)) && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Location</h2>
+
+            {(range.address || range.postcode) && (
+              <div className="mb-4">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-gray-400 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <div className="text-gray-900">
+                    {range.address && <div>{range.address}</div>}
+                    <div>
+                      {range.area}{range.town && `, ${range.town}`}
+                      {range.postcode && (
+                        <span className="ml-2 text-gray-600">{range.postcode}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {range.latitude && range.longitude && (
+              <div>
+                <MapWrapper
+                  ranges={[range]}
+                  center={[range.latitude, range.longitude]}
+                  zoom={15}
+                  height="300px"
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Opening Hours */}
         <div className="mb-6">

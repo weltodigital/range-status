@@ -26,6 +26,10 @@ export interface Range {
   slug: string
   area: string
   town: string | null
+  address?: string | null
+  postcode?: string | null
+  latitude?: number | null
+  longitude?: number | null
   status: string
   note?: string | null
   lastUpdatedAt: Date | null
@@ -176,6 +180,10 @@ export interface CreateRangeData {
   slug: string
   area: string
   town?: string | null
+  address?: string | null
+  postcode?: string | null
+  latitude?: number | null
+  longitude?: number | null
   email: string
   password: string
 }
@@ -246,6 +254,10 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
         slug: data.slug,
         area: data.area,
         town: data.town || null,
+        address: data.address || null,
+        postcode: data.postcode || null,
+        latitude: data.latitude || null,
+        longitude: data.longitude || null,
         status: 'QUIET',
         isActive: true,
         subscriptionType: 'trial',
@@ -505,6 +517,10 @@ export interface UpdateRangeData {
   slug: string
   area: string
   town?: string | null
+  address?: string | null
+  postcode?: string | null
+  latitude?: number | null
+  longitude?: number | null
 }
 
 export async function updateRange(id: string, data: UpdateRangeData): Promise<Range | null> {
@@ -517,6 +533,10 @@ export async function updateRange(id: string, data: UpdateRangeData): Promise<Ra
         slug: data.slug,
         area: data.area,
         town: data.town || null,
+        address: data.address || null,
+        postcode: data.postcode || null,
+        latitude: data.latitude || null,
+        longitude: data.longitude || null,
       })
       .eq('id', id)
       .select()

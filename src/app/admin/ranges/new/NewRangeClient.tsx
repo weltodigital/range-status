@@ -8,6 +8,10 @@ export default function NewRangeClient() {
   const [name, setName] = useState('')
   const [area, setArea] = useState('')
   const [town, setTown] = useState('')
+  const [address, setAddress] = useState('')
+  const [postcode, setPostcode] = useState('')
+  const [latitude, setLatitude] = useState('')
+  const [longitude, setLongitude] = useState('')
   const [slug, setSlug] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -53,6 +57,10 @@ export default function NewRangeClient() {
           name: name.trim(),
           area: area.trim(),
           town: town.trim() || null,
+          address: address.trim() || null,
+          postcode: postcode.trim() || null,
+          latitude: latitude.trim() ? parseFloat(latitude.trim()) : null,
+          longitude: longitude.trim() ? parseFloat(longitude.trim()) : null,
           slug: slug.trim(),
           email: email.trim(),
           password,
@@ -142,6 +150,68 @@ export default function NewRangeClient() {
                     onChange={(e) => setTown(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g. Winchester"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                  Address (Optional)
+                </label>
+                <input
+                  id="address"
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g. 123 High Street"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-2">
+                    Postcode (Optional)
+                  </label>
+                  <input
+                    id="postcode"
+                    type="text"
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. AB12 3CD"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-2">
+                    Latitude (Optional)
+                  </label>
+                  <input
+                    id="latitude"
+                    type="number"
+                    step="any"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. 51.5074"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-2">
+                    Longitude (Optional)
+                  </label>
+                  <input
+                    id="longitude"
+                    type="number"
+                    step="any"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. -0.1278"
                   />
                 </div>
               </div>

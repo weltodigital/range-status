@@ -10,6 +10,10 @@ interface RangeWithUsers {
   slug: string
   area: string
   town: string | null
+  address?: string | null
+  postcode?: string | null
+  latitude?: number | null
+  longitude?: number | null
   status: string
   note?: string | null
   lastUpdatedAt: Date | null
@@ -31,6 +35,10 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
   const [name, setName] = useState(range.name)
   const [area, setArea] = useState(range.area)
   const [town, setTown] = useState(range.town || '')
+  const [address, setAddress] = useState(range.address || '')
+  const [postcode, setPostcode] = useState(range.postcode || '')
+  const [latitude, setLatitude] = useState(range.latitude?.toString() || '')
+  const [longitude, setLongitude] = useState(range.longitude?.toString() || '')
   const [slug, setSlug] = useState(range.slug)
   const [newPassword, setNewPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -67,6 +75,10 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
           name: name.trim(),
           area: area.trim(),
           town: town.trim() || null,
+          address: address.trim() || null,
+          postcode: postcode.trim() || null,
+          latitude: latitude.trim() ? parseFloat(latitude.trim()) : null,
+          longitude: longitude.trim() ? parseFloat(longitude.trim()) : null,
           slug: slug.trim(),
         }),
       })
@@ -231,6 +243,68 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                     value={town}
                     onChange={(e) => setTown(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                  Address (Optional)
+                </label>
+                <input
+                  id="address"
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g. 123 High Street"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-2">
+                    Postcode (Optional)
+                  </label>
+                  <input
+                    id="postcode"
+                    type="text"
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. AB12 3CD"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-2">
+                    Latitude (Optional)
+                  </label>
+                  <input
+                    id="latitude"
+                    type="number"
+                    step="any"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. 51.5074"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-2">
+                    Longitude (Optional)
+                  </label>
+                  <input
+                    id="longitude"
+                    type="number"
+                    step="any"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. -0.1278"
                   />
                 </div>
               </div>

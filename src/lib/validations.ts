@@ -47,6 +47,10 @@ export const rangeSchema = z.object({
   name: z.string().min(1, 'Range name is required'),
   area: z.string().min(1, 'Area is required'),
   town: z.string().optional(),
+  address: z.string().optional(),
+  postcode: z.string().optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
   slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
 })
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { Range } from '@/lib/supabase-db'
 import RangeCard from '@/components/RangeCard'
+import MapWrapper from '@/components/MapWrapper'
 
 type SortOption = 'recent' | 'quiet-first'
 
@@ -146,6 +147,16 @@ export default function RangesClient() {
             </select>
           </div>
         </div>
+      </div>
+
+      {/* Map */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Range Locations</h2>
+        <MapWrapper
+          ranges={filteredRanges}
+          showAllRanges={true}
+          height="400px"
+        />
       </div>
 
       {/* Results */}

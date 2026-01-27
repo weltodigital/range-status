@@ -21,6 +21,10 @@ export async function POST(request: Request) {
       name: body.name,
       area: body.area,
       town: body.town,
+      address: body.address,
+      postcode: body.postcode,
+      latitude: body.latitude,
+      longitude: body.longitude,
       slug: body.slug,
     })
 
@@ -54,6 +58,10 @@ export async function POST(request: Request) {
       slug: rangeData.slug,
       area: rangeData.area,
       town: rangeData.town || null,
+      address: rangeData.address || null,
+      postcode: rangeData.postcode || null,
+      latitude: rangeData.latitude || null,
+      longitude: rangeData.longitude || null,
       email: userData.email,
       password: userData.password,
     })
