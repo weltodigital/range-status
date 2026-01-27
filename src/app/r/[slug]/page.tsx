@@ -115,7 +115,7 @@ export default async function RangePage({ params }: RangePageProps) {
         {/* Navigation */}
         <div className="text-center">
           <Link
-            href="/ranges"
+            href="/"
             className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors"
           >
             ← View all ranges
