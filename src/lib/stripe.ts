@@ -1,10 +1,20 @@
 import Stripe from 'stripe'
 
-// Initialize Stripe with your secret key
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-12-15.clover',
-  typescript: true,
-})
+let stripe: Stripe | null = null
+
+// Lazy initialize Stripe to avoid build-time errors
+function getStripe(): Stripe {
+  if (!stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
+    }
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-12-15.clover',
+      typescript: true,
+    })
+  }
+  return stripe
+}
 
 // Pricing configuration
 export const STRIPE_CONFIG = {
@@ -24,9 +34,7 @@ export async function createCheckoutSession(
   plan: 'monthly' | 'yearly',
   userEmail: string
 ) {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
-  }
+  const stripeClient = getStripe()
 
   const priceId = plan === 'yearly'
     ? STRIPE_CONFIG.yearlyPriceId
@@ -36,7 +44,7 @@ export async function createCheckoutSession(
     throw new Error(`Stripe price ID not configured for ${plan} plan`)
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await stripeClient.checkout.sessions.create({
     customer_email: userEmail,
     payment_method_types: ['card'],
     line_items: [{
@@ -64,11 +72,9 @@ export async function createCheckoutSession(
 
 // Helper function to create billing portal session
 export async function createBillingPortalSession(customerId: string) {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
-  }
+  const stripeClient = getStripe()
 
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await stripeClient.billingPortal.sessions.create({
     customer: customerId,
     return_url: `${process.env.NEXT_PUBLIC_DOMAIN}/portal/billing`
   })
@@ -82,9 +88,7 @@ export function verifyWebhookSignature(
   signature: string,
   secret: string
 ): Stripe.Event {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')
-  }
+  const stripeClient = getStripe()
 
-  return stripe.webhooks.constructEvent(body, signature, secret)
+  return stripeClient.webhooks.constructEvent(body, signature, secret)
 }
