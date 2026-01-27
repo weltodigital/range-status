@@ -17,13 +17,13 @@ export async function calculateTypicalBusyTimes(rangeId: string): Promise<{
   busyTimeData: BusyTimeData[]
   topBusyWindows: TopBusyWindow[]
 }> {
-  // Check if we have at least 30 days of data
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  // Check if we have at least 7 days of data
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-  const statusEvents = await getStatusEvents(rangeId, thirtyDaysAgo)
+  const statusEvents = await getStatusEvents(rangeId, sevenDaysAgo)
 
-  if (statusEvents.length < 30) {
+  if (statusEvents.length < 15) {
     return {
       hasEnoughData: false,
       busyTimeData: [],

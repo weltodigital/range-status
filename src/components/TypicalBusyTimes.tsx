@@ -33,7 +33,7 @@ export default function TypicalBusyTimes({
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Not enough data yet</h3>
           <p className="text-gray-600 text-sm">
-            We need at least 30 days of status updates to show typical busy times. Check back soon!
+            We need at least 7 days of status updates to show typical busy times. Check back soon!
           </p>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function TypicalBusyTimes({
         </div>
 
         <p className="text-xs text-gray-500 mt-4 text-center">
-          Based on the last 30 days of status updates
+          Based on the last 7 days of status updates
         </p>
       </div>
     </div>

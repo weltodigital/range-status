@@ -15,7 +15,7 @@ A production-ready MVP SaaS that helps golf driving ranges show live traffic-lig
 - **Range Directory**: Browse and search ranges by location
 - **Live Status Display**: See current busyness with timestamps
 - **Opening Hours**: Clear display of daily hours with "Open now" status
-- **Typical Busy Times**: Historical data analysis (after 30 days of updates)
+- **Typical Busy Times**: Historical data analysis (after 7 days of updates)
 - **Mobile-first Design**: Optimized for on-the-go checking
 
 ### 👨‍💼 Super Admin (Range Management)
@@ -199,7 +199,7 @@ Customers can:
 
 ## Phase 2: Typical Busy Times
 
-After 30 days of status updates, ranges show:
+After 7 days of status updates, ranges show:
 - **Weekly Heatmap**: Visual pattern of busy times by day/hour
 - **Top 3 Busiest Windows**: Most consistently busy 2-hour periods
 - **Historical Analysis**: Based on QUIET(1), MODERATE(2), BUSY(3) scoring
