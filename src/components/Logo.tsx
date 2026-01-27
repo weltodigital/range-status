@@ -2,6 +2,7 @@ import Image from 'next/image'
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
+  variant?: 'light' | 'dark'
   className?: string
 }
 
@@ -12,10 +13,12 @@ const sizeClasses = {
   xl: 'h-24',
 }
 
-export default function Logo({ size = 'md', className = '' }: LogoProps) {
+export default function Logo({ size = 'md', variant = 'light', className = '' }: LogoProps) {
+  const logoSrc = variant === 'dark' ? '/logo.png' : '/range-status.png'
+
   return (
     <Image
-      src="/range-status.png"
+      src={logoSrc}
       alt="Range Status"
       width={200}
       height={200}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Range } from '@/lib/supabase-db'
 import { useRouter } from 'next/navigation'
 import { generateQRCode } from '@/lib/qr'
+import Logo from '@/components/Logo'
 
 interface QRClientProps {
   range: Range
@@ -92,6 +93,12 @@ export default function QRClient({ range }: QRClientProps) {
                 <p className="font-mono text-sm text-gray-900 break-all print:text-lg">
                   {publicUrl}
                 </p>
+              </div>
+
+              <div className="hidden print:block mt-8 pt-8 border-t border-gray-200">
+                <div className="flex justify-center">
+                  <Logo variant="dark" size="md" />
+                </div>
               </div>
 
               <div className="print:hidden space-y-3">
