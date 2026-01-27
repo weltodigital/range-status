@@ -617,3 +617,45 @@ export async function toggleRangeActiveStatus(id: string): Promise<Range | null>
     return null
   }
 }
+
+export async function changeUserPassword(userId: string, currentPassword: string, newPassword: string): Promise<boolean> {
+  try {
+    // Get user by ID
+    const { data: user, error: getUserError } = await supabase
+      .from('users')
+      .select('id, passwordHash')
+      .eq('id', userId)
+      .single()
+
+    if (getUserError || !user) {
+      console.error('Error finding user:', getUserError)
+      return false
+    }
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash)
+    if (!isValidPassword) {
+      console.error('Current password is incorrect')
+      return false
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 12)
+
+    // Update password
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ passwordHash: newPasswordHash })
+      .eq('id', userId)
+
+    if (updateError) {
+      console.error('Error updating password:', updateError)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Database query error:', error)
+    return false
+  }
+}
