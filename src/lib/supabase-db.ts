@@ -246,24 +246,39 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
     const trialExpiry = new Date()
     trialExpiry.setDate(trialExpiry.getDate() + 7) // 7-day trial
 
+    // Prepare range data, excluding fields that might not exist in DB yet
+    const rangeData = {
+      id: rangeId,
+      name: data.name,
+      slug: data.slug,
+      area: data.area,
+      town: data.town || null,
+      status: 'QUIET',
+      isActive: true,
+    }
+
+    // Try to add subscription fields if they exist
+    try {
+      rangeData.subscriptionType = 'trial'
+      rangeData.subscriptionStatus = 'active'
+      rangeData.subscriptionExpiry = trialExpiry.toISOString()
+    } catch (e) {
+      console.log('Subscription fields not available in database yet')
+    }
+
+    // Try to add address fields if they exist
+    try {
+      if (data.address !== undefined) rangeData.address = data.address || null
+      if (data.postcode !== undefined) rangeData.postcode = data.postcode || null
+      if (data.latitude !== undefined) rangeData.latitude = data.latitude || null
+      if (data.longitude !== undefined) rangeData.longitude = data.longitude || null
+    } catch (e) {
+      console.log('Address fields not available in database yet, creating range without them')
+    }
+
     const { data: range, error: rangeError } = await supabase
       .from('ranges')
-      .insert({
-        id: rangeId,
-        name: data.name,
-        slug: data.slug,
-        area: data.area,
-        town: data.town || null,
-        address: data.address || null,
-        postcode: data.postcode || null,
-        latitude: data.latitude || null,
-        longitude: data.longitude || null,
-        status: 'QUIET',
-        isActive: true,
-        subscriptionType: 'trial',
-        subscriptionStatus: 'active',
-        subscriptionExpiry: trialExpiry.toISOString(),
-      })
+      .insert(rangeData)
       .select()
       .single()
 
@@ -525,19 +540,28 @@ export interface UpdateRangeData {
 
 export async function updateRange(id: string, data: UpdateRangeData): Promise<Range | null> {
   try {
+    // Prepare update data, excluding address fields if they don't exist in DB yet
+    const updateData = {
+      name: data.name,
+      slug: data.slug,
+      area: data.area,
+      town: data.town || null,
+    }
+
+    // Try to add address fields if they exist
+    try {
+      if (data.address !== undefined) updateData.address = data.address || null
+      if (data.postcode !== undefined) updateData.postcode = data.postcode || null
+      if (data.latitude !== undefined) updateData.latitude = data.latitude || null
+      if (data.longitude !== undefined) updateData.longitude = data.longitude || null
+    } catch (e) {
+      console.log('Address fields not available in database yet, updating range without them')
+    }
+
     // Update the range
     const { data: updatedRange, error: rangeError } = await supabase
       .from('ranges')
-      .update({
-        name: data.name,
-        slug: data.slug,
-        area: data.area,
-        town: data.town || null,
-        address: data.address || null,
-        postcode: data.postcode || null,
-        latitude: data.latitude || null,
-        longitude: data.longitude || null,
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()

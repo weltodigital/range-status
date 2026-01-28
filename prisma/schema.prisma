@@ -14,6 +14,10 @@ model Range {
   slug          String        @unique
   area          String
   town          String?
+  address       String?
+  postcode      String?
+  latitude      Float?
+  longitude     Float?
   status        String        @default("QUIET")
   note          String?
   lastUpdatedAt DateTime?
