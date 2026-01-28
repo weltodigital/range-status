@@ -3,6 +3,7 @@ import { getRangeBySlug } from '@/lib/supabase-db'
 import { formatTimeAgo, isStale, getStatusColor } from '@/lib/utils'
 import { WeeklyHours } from '@/lib/hours'
 import { calculateTypicalBusyTimes } from '@/lib/analytics'
+import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage } from '@/lib/subscription-utils'
 import OpeningHours from '@/components/OpeningHours'
 import TypicalBusyTimes from '@/components/TypicalBusyTimes'
 import MapWrapper from '@/components/MapWrapper'
@@ -48,8 +49,12 @@ export default async function RangePage({ params }: RangePageProps) {
     ? range.openingHours as unknown as WeeklyHours
     : null
 
-  // Calculate typical busy times
-  const busyTimesData = await calculateTypicalBusyTimes(range.id)
+  // Check subscription status
+  const subscriptionInfo = getSubscriptionInfo(range)
+  const canShowStatus = shouldShowStatusUpdate(subscriptionInfo)
+
+  // Calculate typical busy times only if subscription allows it
+  const busyTimesData = canShowStatus ? await calculateTypicalBusyTimes(range.id) : null
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,32 +79,63 @@ export default async function RangePage({ params }: RangePageProps) {
 
         {/* Status Card */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-6 text-center">
-          <div className="mb-6">
-            <div className={`inline-flex items-center px-6 py-3 rounded-full text-xl font-bold ${getStatusColor(range.status)}`}>
-              {range.status}
-            </div>
-          </div>
+          {canShowStatus ? (
+            <>
+              <div className="mb-6">
+                <div className={`inline-flex items-center px-6 py-3 rounded-full text-xl font-bold ${getStatusColor(range.status)}`}>
+                  {range.status}
+                </div>
+              </div>
 
-          {range.note && (
-            <p className="text-lg text-gray-700 mb-4 italic">
-              "{range.note}"
-            </p>
-          )}
+              {range.note && (
+                <p className="text-lg text-gray-700 mb-4 italic">
+                  "{range.note}"
+                </p>
+              )}
 
-          <div className="text-sm text-gray-600">
-            {lastUpdated ? (
-              <>
-                Last updated {formatTimeAgo(lastUpdated)}
-                {isDataStale && (
-                  <div className="text-amber-600 font-medium mt-2">
-                    ⚠️ May be out of date
-                  </div>
+              <div className="text-sm text-gray-600">
+                {lastUpdated ? (
+                  <>
+                    Last updated {formatTimeAgo(lastUpdated)}
+                    {isDataStale && (
+                      <div className="text-amber-600 font-medium mt-2">
+                        ⚠️ May be out of date
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-gray-400">No recent updates</span>
                 )}
-              </>
-            ) : (
-              <span className="text-gray-400">No recent updates</span>
-            )}
-          </div>
+              </div>
+            </>
+          ) : (
+            <div className="py-8">
+              <div className="mb-6">
+                <div className="inline-flex items-center px-6 py-3 rounded-full text-xl font-bold bg-gray-100 text-gray-500">
+                  Status Unavailable
+                </div>
+              </div>
+
+              <div className="max-w-md mx-auto">
+                <p className="text-gray-600 mb-4">
+                  {getUpgradeMessage(subscriptionInfo)}
+                </p>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-800 mb-2">Subscribe for Live Status</h3>
+                  <p className="text-sm text-blue-700 mb-3">
+                    Get real-time busy status updates, historical data, and more features.
+                  </p>
+                  <a
+                    href="/portal"
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    Manage Subscription →
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Address and Map */}
@@ -146,13 +182,15 @@ export default async function RangePage({ params }: RangePageProps) {
         </div>
 
         {/* Typical Busy Times */}
-        <div className="mb-6">
-          <TypicalBusyTimes
-            hasEnoughData={busyTimesData.hasEnoughData}
-            busyTimeData={busyTimesData.busyTimeData}
-            topBusyWindows={busyTimesData.topBusyWindows}
-          />
-        </div>
+        {canShowStatus && busyTimesData && (
+          <div className="mb-6">
+            <TypicalBusyTimes
+              hasEnoughData={busyTimesData.hasEnoughData}
+              busyTimeData={busyTimesData.busyTimeData}
+              topBusyWindows={busyTimesData.topBusyWindows}
+            />
+          </div>
+        )}
 
         {/* Navigation */}
         <div className="text-center">

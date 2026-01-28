@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatTimeAgo, isStale, getStatusColorLight } from '@/lib/utils'
+import { getSubscriptionInfo, getSubscriptionStatusBadge } from '@/lib/subscription-utils'
 
 interface RangeWithUsers {
   id: string
@@ -20,6 +21,14 @@ interface RangeWithUsers {
   openingHours?: any
   isActive: boolean
   createdAt: Date
+  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
+  subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  nextPaymentDate?: Date | null
+  canceledAt?: Date | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
   users: {
     id: string
     email: string
@@ -32,6 +41,7 @@ interface EditRangeClientProps {
 
 export default function EditRangeClient({ range: initialRange }: EditRangeClientProps) {
   const [range, setRange] = useState(initialRange)
+  const subscriptionInfo = getSubscriptionInfo(range)
   const [name, setName] = useState(range.name)
   const [area, setArea] = useState(range.area)
   const [town, setTown] = useState(range.town || '')
@@ -371,6 +381,103 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                   <span className="text-sm text-gray-600">Active:</span>
                   <span className={`text-sm font-medium ${range.isActive ? 'text-green-600' : 'text-red-600'}`}>
                     {range.isActive ? 'Yes' : 'No'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Subscription Status */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Subscription Status</h2>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Status:</span>
+                  <span className={getSubscriptionStatusBadge(subscriptionInfo)}>
+                    {subscriptionInfo.statusText}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Type:</span>
+                  <span className="text-sm text-gray-900 capitalize">
+                    {range.subscriptionType || 'Trial'}
+                  </span>
+                </div>
+
+                {range.subscriptionExpiry && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Expires:</span>
+                    <span className="text-sm text-gray-900">
+                      {new Date(range.subscriptionExpiry).toLocaleDateString()}
+                      {subscriptionInfo.daysRemaining !== null && subscriptionInfo.daysRemaining > 0 && (
+                        <span className="text-gray-500 ml-2">
+                          ({subscriptionInfo.daysRemaining} days remaining)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {range.lastPaymentDate && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Last Payment:</span>
+                    <span className="text-sm text-gray-900">
+                      {new Date(range.lastPaymentDate).toLocaleDateString()}
+                      {subscriptionInfo.daysSinceLastPayment !== null && (
+                        <span className="text-gray-500 ml-2">
+                          ({subscriptionInfo.daysSinceLastPayment} days ago)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {range.nextPaymentDate && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Next Payment:</span>
+                    <span className="text-sm text-gray-900">
+                      {new Date(range.nextPaymentDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+
+                {range.canceledAt && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Canceled:</span>
+                    <span className="text-sm text-gray-900">
+                      {new Date(range.canceledAt).toLocaleDateString()}
+                      {subscriptionInfo.daysSinceCanceled !== null && (
+                        <span className="text-gray-500 ml-2">
+                          ({subscriptionInfo.daysSinceCanceled} days ago)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {range.stripeCustomerId && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Stripe Customer:</span>
+                    <span className="text-sm text-gray-900 font-mono">
+                      {range.stripeCustomerId}
+                    </span>
+                  </div>
+                )}
+
+                {range.stripeSubscriptionId && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Stripe Subscription:</span>
+                    <span className="text-sm text-gray-900 font-mono">
+                      {range.stripeSubscriptionId}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <span className="text-sm text-gray-600">Full Access:</span>
+                  <span className={`text-sm font-medium ${subscriptionInfo.canAccessFullFeatures ? 'text-green-600' : 'text-red-600'}`}>
+                    {subscriptionInfo.canAccessFullFeatures ? 'Yes' : 'No'}
                   </span>
                 </div>
               </div>

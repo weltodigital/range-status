@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { formatTimeAgo, isStale, getStatusColorLight } from '@/lib/utils'
+import { getSubscriptionInfo, getSubscriptionStatusBadge } from '@/lib/subscription-utils'
 
 interface RangeWithUsers {
   id: string
@@ -17,6 +18,14 @@ interface RangeWithUsers {
   openingHours?: any
   isActive: boolean
   createdAt: Date
+  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
+  subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  nextPaymentDate?: Date | null
+  canceledAt?: Date | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
   users: {
     id: string
     email: string
@@ -134,6 +143,9 @@ export default function AdminRangesClient({ ranges: initialRanges }: AdminRanges
                       Last Updated
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Subscription
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Portal User
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -175,6 +187,16 @@ export default function AdminRangesClient({ ranges: initialRanges }: AdminRanges
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {lastUpdated ? formatTimeAgo(lastUpdated) : 'Never'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {(() => {
+                            const subscriptionInfo = getSubscriptionInfo(range)
+                            return (
+                              <span className={getSubscriptionStatusBadge(subscriptionInfo)}>
+                                {subscriptionInfo.statusText}
+                              </span>
+                            )
+                          })()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {portalUser ? portalUser.email : 'No user'}

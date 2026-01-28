@@ -37,8 +37,11 @@ export interface Range {
   isActive: boolean
   createdAt: Date
   subscriptionType?: 'trial' | 'monthly' | 'yearly'
-  subscriptionStatus?: 'active' | 'expired' | 'cancelled'
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
   subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  nextPaymentDate?: Date | null
+  canceledAt?: Date | null
   stripeCustomerId?: string | null
   stripeSubscriptionId?: string | null
   users: RangeUser[]
@@ -717,8 +720,11 @@ export async function changeUserPassword(userId: string, currentPassword: string
 
 export async function updateRangeSubscription(rangeId: string, subscriptionData: {
   subscriptionType?: 'trial' | 'monthly' | 'yearly'
-  subscriptionStatus?: 'active' | 'expired' | 'cancelled'
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
   subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  nextPaymentDate?: Date | null
+  canceledAt?: Date | null
   stripeCustomerId?: string | null
   stripeSubscriptionId?: string | null
 }): Promise<Range | null> {

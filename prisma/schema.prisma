@@ -9,23 +9,34 @@ datasource db {
 }
 
 model Range {
-  id            String        @id @default(uuid())
-  name          String
-  slug          String        @unique
-  area          String
-  town          String?
-  address       String?
-  postcode      String?
-  latitude      Float?
-  longitude     Float?
-  status        String        @default("QUIET")
-  note          String?
-  lastUpdatedAt DateTime?
-  openingHours  Json?
-  isActive      Boolean       @default(true)
-  createdAt     DateTime      @default(now())
-  statusEvents  StatusEvent[]
-  users         User[]
+  id                    String        @id @default(uuid())
+  name                  String
+  slug                  String        @unique
+  area                  String
+  town                  String?
+  address               String?
+  postcode              String?
+  latitude              Float?
+  longitude             Float?
+  status                String        @default("QUIET")
+  note                  String?
+  lastUpdatedAt         DateTime?
+  openingHours          Json?
+  isActive              Boolean       @default(true)
+  createdAt             DateTime      @default(now())
+
+  // Subscription fields
+  subscriptionType      String        @default("trial") // trial, monthly, yearly
+  subscriptionStatus    String        @default("active") // active, past_due, canceled, expired
+  subscriptionExpiry    DateTime?
+  lastPaymentDate       DateTime?
+  nextPaymentDate       DateTime?
+  canceledAt            DateTime?
+  stripeSubscriptionId  String?
+  stripeCustomerId      String?
+
+  statusEvents          StatusEvent[]
+  users                 User[]
 
   @@map("ranges")
 }

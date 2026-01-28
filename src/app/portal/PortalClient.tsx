@@ -5,6 +5,7 @@ import StatusButton from '@/components/StatusButton'
 import { formatTimeAgo, isStale } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Logo from '@/components/Logo'
+import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getSubscriptionStatusBadge } from '@/lib/subscription-utils'
 
 interface RangeType {
   id: string
@@ -18,6 +19,14 @@ interface RangeType {
   openingHours?: any
   isActive: boolean
   createdAt: Date
+  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
+  subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  nextPaymentDate?: Date | null
+  canceledAt?: Date | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
 }
 
 interface PortalClientProps {
@@ -28,6 +37,9 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
   const [range, setRange] = useState(initialRange)
   const [note, setNote] = useState(range.note || '')
   const [loading, setLoading] = useState(false)
+
+  const subscriptionInfo = getSubscriptionInfo(range)
+  const canUpdateStatus = shouldShowStatusUpdate(subscriptionInfo)
   const [saveStatus, setSaveStatus] = useState('')
   const router = useRouter()
 
@@ -109,29 +121,57 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
           )}
         </div>
 
+        {/* Subscription Status */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4 text-secondary">Update Status</h2>
+          <h2 className="text-lg font-semibold mb-4 text-secondary">Subscription</h2>
 
-          <div className="space-y-3 mb-4">
-            <StatusButton
-              status="QUIET"
-              isActive={range.status === 'QUIET'}
-              onClick={() => handleStatusUpdate('QUIET')}
-              disabled={loading}
-            />
-            <StatusButton
-              status="MODERATE"
-              isActive={range.status === 'MODERATE'}
-              onClick={() => handleStatusUpdate('MODERATE')}
-              disabled={loading}
-            />
-            <StatusButton
-              status="BUSY"
-              isActive={range.status === 'BUSY'}
-              onClick={() => handleStatusUpdate('BUSY')}
-              disabled={loading}
-            />
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm text-gray-600">Status:</span>
+            <span className={getSubscriptionStatusBadge(subscriptionInfo)}>
+              {subscriptionInfo.statusText}
+            </span>
           </div>
+
+          {!canUpdateStatus && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-800 mb-2">Subscription Required</h3>
+              <p className="text-sm text-blue-700 mb-3">
+                {getUpgradeMessage(subscriptionInfo)}
+              </p>
+              <a
+                href="/portal/billing"
+                className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                Manage Subscription →
+              </a>
+            </div>
+          )}
+        </div>
+
+        {canUpdateStatus && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 className="text-lg font-semibold mb-4 text-secondary">Update Status</h2>
+
+            <div className="space-y-3 mb-4">
+              <StatusButton
+                status="QUIET"
+                isActive={range.status === 'QUIET'}
+                onClick={() => handleStatusUpdate('QUIET')}
+                disabled={loading}
+              />
+              <StatusButton
+                status="MODERATE"
+                isActive={range.status === 'MODERATE'}
+                onClick={() => handleStatusUpdate('MODERATE')}
+                disabled={loading}
+              />
+              <StatusButton
+                status="BUSY"
+                isActive={range.status === 'BUSY'}
+                onClick={() => handleStatusUpdate('BUSY')}
+                disabled={loading}
+              />
+            </div>
 
           <div className="mb-4">
             <label htmlFor="note" className="block text-sm font-medium text-secondary mb-2">
@@ -149,16 +189,17 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
             <p className="text-xs text-accent mt-1">{note.length}/60 characters</p>
           </div>
 
-          {saveStatus && (
-            <div className={`text-center py-2 rounded ${
-              saveStatus === 'Saved!'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
-            }`}>
-              {saveStatus}
-            </div>
-          )}
-        </div>
+            {saveStatus && (
+              <div className={`text-center py-2 rounded ${
+                saveStatus === 'Saved!'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {saveStatus}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4 text-secondary">Opening Hours</h2>
