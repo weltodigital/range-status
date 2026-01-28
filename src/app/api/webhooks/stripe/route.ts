@@ -108,11 +108,11 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   if (rangeId) {
     const status = subscription.status === 'active' ? 'active' :
-                  subscription.status === 'canceled' ? 'cancelled' : 'expired'
+                  subscription.status === 'canceled' ? 'canceled' : 'expired'
 
     // Update subscription status
     await updateRangeSubscription(rangeId, {
-      subscriptionStatus: status as 'active' | 'expired' | 'cancelled'
+      subscriptionStatus: status as 'active' | 'expired' | 'canceled'
     })
 
     console.log(`Subscription updated for range ${rangeId}: status = ${status}`)
@@ -125,7 +125,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   if (rangeId) {
     await updateRangeSubscription(rangeId, {
       subscriptionType: 'trial',
-      subscriptionStatus: 'cancelled',
+      subscriptionStatus: 'canceled',
       subscriptionExpiry: new Date(),
       stripeCustomerId: null,
       stripeSubscriptionId: null

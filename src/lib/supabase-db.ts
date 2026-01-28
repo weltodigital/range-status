@@ -250,7 +250,7 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
     trialExpiry.setDate(trialExpiry.getDate() + 7) // 7-day trial
 
     // Prepare range data, excluding fields that might not exist in DB yet
-    const rangeData = {
+    const rangeData: any = {
       id: rangeId,
       name: data.name,
       slug: data.slug,
@@ -544,7 +544,7 @@ export interface UpdateRangeData {
 export async function updateRange(id: string, data: UpdateRangeData): Promise<Range | null> {
   try {
     // Prepare update data, excluding address fields if they don't exist in DB yet
-    const updateData = {
+    const updateData: any = {
       name: data.name,
       slug: data.slug,
       area: data.area,

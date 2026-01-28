@@ -1,5 +1,3 @@
-import { Range } from './supabase-db'
-
 export type SubscriptionStatus = 'active' | 'past_due' | 'canceled' | 'expired' | 'trial'
 export type SubscriptionType = 'trial' | 'monthly' | 'yearly'
 
@@ -19,7 +17,16 @@ export interface SubscriptionInfo {
   canAccessFullFeatures: boolean
 }
 
-export function getSubscriptionInfo(range: Range): SubscriptionInfo {
+// Minimal interface for subscription calculations - only requires subscription fields
+export interface SubscriptionRange {
+  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
+  subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  canceledAt?: Date | null
+}
+
+export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo {
   const now = new Date()
   const subscriptionType = range.subscriptionType || 'trial'
   const subscriptionStatus = range.subscriptionStatus || 'active'
