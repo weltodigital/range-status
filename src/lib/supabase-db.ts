@@ -245,9 +245,8 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
     const { data: uuidResult } = await supabase.rpc('gen_random_uuid')
     const rangeId = uuidResult || crypto.randomUUID()
 
-    // Create range first with trial subscription
-    const trialExpiry = new Date()
-    trialExpiry.setDate(trialExpiry.getDate() + 7) // 7-day trial
+    // Create range without subscription (inactive by default)
+    // Ranges need to contact us and then pay for subscription to get full access
 
     // Prepare range data, excluding fields that might not exist in DB yet
     const rangeData: any = {
@@ -260,11 +259,11 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
       isActive: true,
     }
 
-    // Try to add subscription fields if they exist
+    // Try to add subscription fields - new ranges have no subscription by default
     try {
-      rangeData.subscriptionType = 'trial'
-      rangeData.subscriptionStatus = 'active'
-      rangeData.subscriptionExpiry = trialExpiry.toISOString()
+      rangeData.subscriptionType = null // No subscription type initially
+      rangeData.subscriptionStatus = 'expired' // Expired means they need to contact us
+      rangeData.subscriptionExpiry = null // No expiry date
     } catch (e) {
       console.log('Subscription fields not available in database yet')
     }

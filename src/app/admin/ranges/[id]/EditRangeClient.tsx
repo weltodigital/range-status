@@ -480,6 +480,37 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                     {subscriptionInfo.canAccessFullFeatures ? 'Yes' : 'No'}
                   </span>
                 </div>
+
+                {/* Admin Subscription Controls */}
+                {subscriptionInfo.isExpired && !subscriptionInfo.isTrial && !subscriptionInfo.isPaid && !subscriptionInfo.isCanceled && (
+                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Range Needs Account Setup</h4>
+                    <p className="text-sm text-yellow-700 mb-3">
+                      This range is listed but needs to contact us for full account setup. Once they contact us and are ready to subscribe, you can activate their subscription access.
+                    </p>
+                    <button
+                      onClick={async () => {
+                        if (confirm('Activate subscription access for this range? They will be able to manage subscriptions and update status.')) {
+                          try {
+                            const response = await fetch(`/api/admin/ranges/${range.id}/activate-subscription`, {
+                              method: 'POST'
+                            })
+                            if (response.ok) {
+                              window.location.reload()
+                            } else {
+                              alert('Failed to activate subscription access')
+                            }
+                          } catch (error) {
+                            alert('Error activating subscription access')
+                          }
+                        }
+                      }}
+                      className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                    >
+                      Activate Subscription Access
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

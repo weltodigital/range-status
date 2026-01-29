@@ -1,41 +1,48 @@
-import { NextResponse } from 'next/server'
-import { checkSlugExists, checkEmailExists, createRangeWithUser } from '@/lib/supabase-db'
+import { NextResponse } from "next/server"
+import { createRangeWithUser } from "@/lib/supabase-db"
 
-export async function POST(request: Request) {
+export async function GET() {
   try {
-    console.log('🧪 Testing range creation...')
+    console.log("Testing range creation...")
 
-    // Test basic connectivity
-    const slugExists = await checkSlugExists('test-debug-range')
-    console.log('✅ checkSlugExists worked:', slugExists)
+    // Test data - using your exact data from the form
+    const testData = {
+      name: "test range",
+      slug: "test-range",
+      area: "Hampshire",
+      town: "Havant",
+      address: "tes range range",
+      postcode: "PO9 3LR",
+      latitude: 50.84187196252509,
+      longitude: -0.9879131479193698,
+      email: "edwelton0@gmail.com",
+      password: "yl3ygwVWXOmW",
+    }
 
-    const emailExists = await checkEmailExists('debug@test.com')
-    console.log('✅ checkEmailExists worked:', emailExists)
+    console.log("Test data:", JSON.stringify(testData, null, 2))
 
-    // Try to create a test range
-    const result = await createRangeWithUser({
-      name: 'Debug Test Range',
-      slug: 'debug-test-range',
-      area: 'Test Area',
-      town: 'Test Town',
-      email: 'debug@test.com',
-      password: 'testpassword123'
-    })
+    const result = await createRangeWithUser(testData)
 
-    console.log('🎯 createRangeWithUser result:', result)
+    if (!result) {
+      return NextResponse.json({
+        error: "createRangeWithUser returned null",
+        testData
+      }, { status: 500 })
+    }
 
     return NextResponse.json({
       success: true,
-      slugExists,
-      emailExists,
-      createResult: result
+      result,
+      testData
     })
+
   } catch (error) {
-    console.error('❌ Debug test error:', error)
+    console.error("Debug range creation error:", error)
+
     return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : null
+      error: "Debug test failed",
+      details: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined
     }, { status: 500 })
   }
 }

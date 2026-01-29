@@ -3,7 +3,7 @@ import { getRangeBySlug } from '@/lib/supabase-db'
 import { formatTimeAgo, isStale, getStatusColor } from '@/lib/utils'
 import { WeeklyHours } from '@/lib/hours'
 import { calculateTypicalBusyTimes } from '@/lib/analytics'
-import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage } from '@/lib/subscription-utils'
+import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getContactUsMessage } from '@/lib/subscription-utils'
 import OpeningHours from '@/components/OpeningHours'
 import TypicalBusyTimes from '@/components/TypicalBusyTimes'
 import MapWrapper from '@/components/MapWrapper'
@@ -118,21 +118,43 @@ export default async function RangePage({ params }: RangePageProps) {
 
               <div className="max-w-md mx-auto">
                 <p className="text-gray-600 mb-4">
-                  {getUpgradeMessage(subscriptionInfo)}
+                  {getContactUsMessage(subscriptionInfo)}
                 </p>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-blue-800 mb-2">Subscribe for Live Status</h3>
-                  <p className="text-sm text-blue-700 mb-3">
-                    Get real-time busy status updates, historical data, and more features.
-                  </p>
-                  <a
-                    href="/portal"
-                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
-                  >
-                    Manage Subscription →
-                  </a>
-                </div>
+                {/* Check if this is a new range that needs to contact us */}
+                {subscriptionInfo.isExpired && !subscriptionInfo.isTrial && !subscriptionInfo.isPaid && !subscriptionInfo.isCanceled ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-green-800 mb-2">Get Listed with Live Status</h3>
+                    <p className="text-sm text-green-700 mb-3">
+                      This range is in our directory. Contact us to set up live status updates and subscription features.
+                    </p>
+                    <a
+                      href="mailto:hello@rangestatus.com?subject=Set up live status for {range.name}"
+                      className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm font-medium mr-2"
+                    >
+                      Contact Us →
+                    </a>
+                    <a
+                      href="/portal"
+                      className="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium"
+                    >
+                      Portal Login
+                    </a>
+                  </div>
+                ) : (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-800 mb-2">Subscribe for Live Status</h3>
+                    <p className="text-sm text-blue-700 mb-3">
+                      Get real-time busy status updates, historical data, and more features.
+                    </p>
+                    <a
+                      href="/portal"
+                      className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      Manage Subscription →
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           )}

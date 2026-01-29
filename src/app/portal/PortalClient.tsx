@@ -5,7 +5,7 @@ import StatusButton from '@/components/StatusButton'
 import { formatTimeAgo, isStale } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Logo from '@/components/Logo'
-import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getSubscriptionStatusBadge } from '@/lib/subscription-utils'
+import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getSubscriptionStatusBadge, getContactUsMessage } from '@/lib/subscription-utils'
 
 interface RangeType {
   id: string
@@ -133,18 +133,36 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
           </div>
 
           {!canUpdateStatus && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-800 mb-2">Subscription Required</h3>
-              <p className="text-sm text-blue-700 mb-3">
-                {getUpgradeMessage(subscriptionInfo)}
-              </p>
-              <a
-                href="/portal/billing"
-                className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
-              >
-                Manage Subscription →
-              </a>
-            </div>
+            <>
+              {/* Check if this is a new range that needs to contact us first */}
+              {subscriptionInfo.isExpired && !subscriptionInfo.isTrial && !subscriptionInfo.isPaid && !subscriptionInfo.isCanceled ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-800 mb-2">Account Setup Required</h3>
+                  <p className="text-sm text-green-700 mb-3">
+                    {getContactUsMessage(subscriptionInfo)}
+                  </p>
+                  <a
+                    href={`mailto:hello@rangestatus.com?subject=Set up full account for ${range.name}&body=Hi, I'd like to set up the full account and subscription for ${range.name} (${range.area}). Please let me know the next steps.`}
+                    className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm font-medium mr-2"
+                  >
+                    Contact Us First →
+                  </a>
+                </div>
+              ) : (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-800 mb-2">Subscription Required</h3>
+                  <p className="text-sm text-blue-700 mb-3">
+                    {getUpgradeMessage(subscriptionInfo)}
+                  </p>
+                  <a
+                    href="/portal/billing"
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    Manage Subscription →
+                  </a>
+                </div>
+              )}
+            </>
           )}
         </div>
 

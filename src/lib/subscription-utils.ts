@@ -124,6 +124,10 @@ export function shouldShowStatusUpdate(info: SubscriptionInfo): boolean {
 }
 
 export function getUpgradeMessage(info: SubscriptionInfo): string {
+  // Check if this is a new range without any subscription (contact us state)
+  if (info.isExpired && !info.isTrial && !info.isPaid && !info.isCanceled) {
+    return 'Contact us to set up your full account and subscription to start updating your range status.'
+  }
   if (info.isTrial && info.isExpired) {
     return 'Your trial has expired. Subscribe now to continue updating your range status.'
   }
@@ -137,4 +141,12 @@ export function getUpgradeMessage(info: SubscriptionInfo): string {
     return 'Your subscription has expired. Renew now to continue using all features.'
   }
   return 'Subscribe to access all features including status updates.'
+}
+
+export function getContactUsMessage(info: SubscriptionInfo): string {
+  // Message for ranges that need to contact us first
+  if (info.isExpired && !info.isTrial && !info.isPaid && !info.isCanceled) {
+    return 'This range is listed in our directory but needs to contact us to activate full status updates and subscription features.'
+  }
+  return getUpgradeMessage(info)
 }
