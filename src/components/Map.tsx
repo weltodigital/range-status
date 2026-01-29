@@ -5,18 +5,32 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Fix for default markers in Next.js
-import icon from 'leaflet/dist/images/marker-icon.png'
-import iconShadow from 'leaflet/dist/images/marker-shadow.png'
+// Create custom golf flag SVG icons for different status colors
+const createGolfFlagIcon = (color: string) => {
+  const svg = `
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <!-- Flag pole -->
+      <line x1="16" y1="4" x2="16" y2="28" stroke="#8B4513" stroke-width="2"/>
+      <!-- Flag -->
+      <path d="M16 4 L28 8 L28 16 L16 12 Z" fill="${color}" stroke="#333" stroke-width="0.5"/>
+      <!-- Golf ball at base -->
+      <circle cx="16" cy="28" r="2" fill="white" stroke="#333" stroke-width="0.5"/>
+      <!-- Golf ball dimples -->
+      <circle cx="15" cy="27.5" r="0.3" fill="#ddd"/>
+      <circle cx="17" cy="27.5" r="0.3" fill="#ddd"/>
+      <circle cx="16" cy="28.5" r="0.3" fill="#ddd"/>
+    </svg>
+  `;
 
-const DefaultIcon = new Icon({
-  iconUrl: icon.src,
-  shadowUrl: iconShadow.src,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-})
+  const iconUrl = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+  return new Icon({
+    iconUrl,
+    iconSize: [32, 32],
+    iconAnchor: [16, 28],
+    popupAnchor: [0, -28],
+  });
+}
 
 interface Range {
   id: string
@@ -59,18 +73,11 @@ export default function Map({
 
   const mapZoom = !showAllRanges && rangesWithCoords.length === 1 ? 15 : zoom
 
-  useEffect(() => {
-    // Set default icon for all markers
-    if (typeof window !== 'undefined') {
-      const L = require('leaflet')
-      delete L.Icon.Default.prototype._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: icon.src,
-        iconUrl: icon.src,
-        shadowUrl: iconShadow.src,
-      })
-    }
-  }, [])
+  // Create icons for each status
+  const getGolfIcon = (status: string) => {
+    const color = getStatusColor(status)
+    return createGolfFlagIcon(color)
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -105,7 +112,7 @@ export default function Map({
           <Marker
             key={range.id}
             position={[range.latitude!, range.longitude!]}
-            icon={DefaultIcon}
+            icon={getGolfIcon(range.status)}
           >
             <Popup>
               <div className="min-w-48">
