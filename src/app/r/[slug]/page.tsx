@@ -1,4 +1,5 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getRangeBySlug } from '@/lib/supabase-db'
 import { formatTimeAgo, isStale, getStatusColor } from '@/lib/utils'
 import { WeeklyHours } from '@/lib/hours'
@@ -36,6 +37,17 @@ export async function generateMetadata({ params }: RangePageProps) {
 
 export default async function RangePage({ params }: RangePageProps) {
   const { slug } = await params
+
+  // Check if this is the app subdomain and redirect to main domain
+  const headersList = headers()
+  const hostname = headersList.get('host') || ''
+  const isAppSubdomain = hostname.includes('app.rangestatus.com')
+
+  if (isAppSubdomain) {
+    // Redirect to main domain for range pages
+    const mainDomainUrl = `https://rangestatus.com/r/${slug}`
+    redirect(mainDomainUrl)
+  }
 
   const range = await getRangeBySlug(slug)
 
