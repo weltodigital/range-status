@@ -155,7 +155,7 @@ export default function RangesClient() {
         <MapWrapper
           ranges={filteredRanges}
           showAllRanges={true}
-          height="400px"
+          height="600px"
         />
       </div>
 

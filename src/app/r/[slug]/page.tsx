@@ -169,7 +169,7 @@ export default async function RangePage({ params }: RangePageProps) {
                   ranges={[range]}
                   center={[range.latitude, range.longitude]}
                   zoom={15}
-                  height="300px"
+                  height="400px"
                 />
               </div>
             )}
