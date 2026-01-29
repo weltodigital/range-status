@@ -5,20 +5,62 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Create custom golf flag SVG icons for different status colors
-const createGolfFlagIcon = (color: string) => {
+// Create custom golf ball SVG icons for different status colors
+const createGolfBallIcon = (color: string) => {
   const svg = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <!-- Flag pole -->
-      <line x1="16" y1="4" x2="16" y2="28" stroke="#8B4513" stroke-width="2"/>
-      <!-- Flag -->
-      <path d="M16 4 L28 8 L28 16 L16 12 Z" fill="${color}" stroke="#333" stroke-width="0.5"/>
-      <!-- Golf ball at base -->
-      <circle cx="16" cy="28" r="2" fill="white" stroke="#333" stroke-width="0.5"/>
-      <!-- Golf ball dimples -->
-      <circle cx="15" cy="27.5" r="0.3" fill="#ddd"/>
-      <circle cx="17" cy="27.5" r="0.3" fill="#ddd"/>
-      <circle cx="16" cy="28.5" r="0.3" fill="#ddd"/>
+      <!-- Shadow/base -->
+      <ellipse cx="16" cy="28" rx="8" ry="2" fill="#00000020"/>
+      <!-- Golf ball main body -->
+      <circle cx="16" cy="16" r="12" fill="white" stroke="#333" stroke-width="1"/>
+      <!-- Status color indicator ring -->
+      <circle cx="16" cy="16" r="11" fill="none" stroke="${color}" stroke-width="3"/>
+      <!-- Golf ball dimples pattern -->
+      <circle cx="12" cy="12" r="1" fill="#ddd"/>
+      <circle cx="20" cy="12" r="1" fill="#ddd"/>
+      <circle cx="16" cy="10" r="1" fill="#ddd"/>
+      <circle cx="14" cy="16" r="1" fill="#ddd"/>
+      <circle cx="18" cy="16" r="1" fill="#ddd"/>
+      <circle cx="12" cy="20" r="1" fill="#ddd"/>
+      <circle cx="20" cy="20" r="1" fill="#ddd"/>
+      <circle cx="16" cy="22" r="1" fill="#ddd"/>
+      <circle cx="10" cy="16" r="0.8" fill="#ddd"/>
+      <circle cx="22" cy="16" r="0.8" fill="#ddd"/>
+      <circle cx="16" cy="8" r="0.8" fill="#ddd"/>
+      <circle cx="16" cy="24" r="0.8" fill="#ddd"/>
+    </svg>
+  `;
+
+  const iconUrl = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+  return new Icon({
+    iconUrl,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+  });
+}
+
+// Alternative golf club icon option
+const createGolfClubIcon = (color: string) => {
+  const svg = `
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shadow/base -->
+      <ellipse cx="16" cy="28" rx="6" ry="2" fill="#00000020"/>
+      <!-- Golf club shaft -->
+      <line x1="16" y1="6" x2="16" y2="26" stroke="#8B4513" stroke-width="2"/>
+      <!-- Golf club head (driver style) -->
+      <rect x="12" y="24" width="8" height="4" rx="1" fill="${color}" stroke="#333" stroke-width="0.5"/>
+      <!-- Club head details -->
+      <line x1="13" y1="26" x2="19" y2="26" stroke="white" stroke-width="0.5"/>
+      <!-- Golf ball -->
+      <circle cx="18" cy="8" r="2.5" fill="white" stroke="#333" stroke-width="0.5"/>
+      <!-- Ball dimples -->
+      <circle cx="17.5" cy="7.5" r="0.3" fill="#ddd"/>
+      <circle cx="18.5" cy="7.5" r="0.3" fill="#ddd"/>
+      <circle cx="18" cy="8.5" r="0.3" fill="#ddd"/>
+      <!-- Status indicator -->
+      <circle cx="8" cy="8" r="3" fill="${color}" stroke="white" stroke-width="1"/>
     </svg>
   `;
 
@@ -73,11 +115,17 @@ export default function Map({
 
   const mapZoom = !showAllRanges && rangesWithCoords.length === 1 ? 15 : zoom
 
-  // Create icons for each status
+  // Create icons for each status - using golf ball icons
   const getGolfIcon = (status: string) => {
     const color = getStatusColor(status)
-    return createGolfFlagIcon(color)
+    return createGolfBallIcon(color)
   }
+
+  // Alternative function if you want to use golf club icons instead
+  // const getGolfIcon = (status: string) => {
+  //   const color = getStatusColor(status)
+  //   return createGolfClubIcon(color)
+  // }
 
   const getStatusColor = (status: string) => {
     switch (status) {
