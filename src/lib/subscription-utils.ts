@@ -19,7 +19,7 @@ export interface SubscriptionInfo {
 
 // Minimal interface for subscription calculations - only requires subscription fields
 export interface SubscriptionRange {
-  subscriptionType?: 'trial' | 'monthly' | 'yearly'
+  subscriptionType?: 'trial' | 'monthly' | 'yearly' | null
   subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
   subscriptionExpiry?: Date | null
   lastPaymentDate?: Date | null
@@ -28,7 +28,7 @@ export interface SubscriptionRange {
 
 export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo {
   const now = new Date()
-  const subscriptionType = range.subscriptionType || 'trial'
+  const subscriptionType = range.subscriptionType ?? 'trial'
   const subscriptionStatus = range.subscriptionStatus || 'active'
   const subscriptionExpiry = range.subscriptionExpiry ? new Date(range.subscriptionExpiry) : null
   const lastPaymentDate = range.lastPaymentDate ? new Date(range.lastPaymentDate) : null
@@ -40,13 +40,13 @@ export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo 
   const daysSinceLastPayment = lastPaymentDate ? Math.ceil((now.getTime() - lastPaymentDate.getTime()) / (1000 * 60 * 60 * 24)) : null
   const daysSinceCanceled = canceledAt ? Math.ceil((now.getTime() - canceledAt.getTime()) / (1000 * 60 * 60 * 24)) : null
 
-  // Determine status flags
+  // Determine status flags - handle null subscription types
   const isTrial = subscriptionType === 'trial'
-  const isExpired = subscriptionExpiry ? now > subscriptionExpiry : false
+  const isExpired = subscriptionExpiry ? now > subscriptionExpiry : (subscriptionStatus === 'expired')
   const isCanceled = subscriptionStatus === 'canceled'
   const isPastDue = subscriptionStatus === 'past_due'
   const isActive = subscriptionStatus === 'active' && !isExpired
-  const isPaid = !isTrial && isActive
+  const isPaid = subscriptionType !== 'trial' && subscriptionType !== null && isActive
 
   // Determine access level
   const canAccessFullFeatures = isActive && !isExpired

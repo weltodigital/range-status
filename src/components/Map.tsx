@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { getSubscriptionInfo, shouldShowStatusUpdate } from '@/lib/subscription-utils'
 
 // Create custom golf ball SVG icons for different status colors
 const createGolfBallIcon = (color: string) => {
@@ -86,6 +87,11 @@ interface Range {
   longitude?: number | null
   status: string
   note?: string | null
+  subscriptionType?: 'trial' | 'monthly' | 'yearly' | null
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'expired'
+  subscriptionExpiry?: Date | null
+  lastPaymentDate?: Date | null
+  canceledAt?: Date | null
 }
 
 interface MapProps {
@@ -115,9 +121,14 @@ export default function Map({
 
   const mapZoom = !showAllRanges && rangesWithCoords.length === 1 ? 15 : zoom
 
-  // Create icons for each status - using golf ball icons
-  const getGolfIcon = (status: string) => {
-    const color = getStatusColor(status)
+  // Create icons for each range - using golf ball icons
+  const getGolfIcon = (range: Range) => {
+    const subscriptionInfo = getSubscriptionInfo(range)
+    const canShowStatus = shouldShowStatusUpdate(subscriptionInfo)
+
+    // If no subscription, show gray icon regardless of status
+    const displayStatus = canShowStatus ? range.status : 'UNAVAILABLE'
+    const color = getStatusColor(displayStatus)
     return createGolfBallIcon(color)
   }
 
@@ -132,12 +143,20 @@ export default function Map({
       case 'QUIET': return '#22c55e'
       case 'MODERATE': return '#f59e0b'
       case 'BUSY': return '#ef4444'
+      case 'UNAVAILABLE': return '#9ca3af' // Gray for unavailable status
       default: return '#6b7280'
     }
   }
 
-  const getStatusText = (status: string) => {
-    switch (status) {
+  const getStatusText = (range: Range) => {
+    const subscriptionInfo = getSubscriptionInfo(range)
+    const canShowStatus = shouldShowStatusUpdate(subscriptionInfo)
+
+    if (!canShowStatus) {
+      return 'Status Unavailable'
+    }
+
+    switch (range.status) {
       case 'QUIET': return 'Quiet'
       case 'MODERATE': return 'Moderate'
       case 'BUSY': return 'Busy'
@@ -156,23 +175,28 @@ export default function Map({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {rangesWithCoords.map((range) => (
-          <Marker
-            key={range.id}
-            position={[range.latitude!, range.longitude!]}
-            icon={getGolfIcon(range.status)}
-          >
-            <Popup>
-              <div className="min-w-48">
-                <h3 className="font-semibold text-gray-900 mb-1">{range.name}</h3>
-                <div className="mb-2">
-                  <span
-                    className="inline-block px-2 py-1 text-xs font-medium rounded text-white"
-                    style={{ backgroundColor: getStatusColor(range.status) }}
-                  >
-                    {getStatusText(range.status)}
-                  </span>
-                </div>
+        {rangesWithCoords.map((range) => {
+          const subscriptionInfo = getSubscriptionInfo(range)
+          const canShowStatus = shouldShowStatusUpdate(subscriptionInfo)
+          const displayStatus = canShowStatus ? range.status : 'UNAVAILABLE'
+
+          return (
+            <Marker
+              key={range.id}
+              position={[range.latitude!, range.longitude!]}
+              icon={getGolfIcon(range)}
+            >
+              <Popup>
+                <div className="min-w-48">
+                  <h3 className="font-semibold text-gray-900 mb-1">{range.name}</h3>
+                  <div className="mb-2">
+                    <span
+                      className="inline-block px-2 py-1 text-xs font-medium rounded text-white"
+                      style={{ backgroundColor: getStatusColor(displayStatus) }}
+                    >
+                      {getStatusText(range)}
+                    </span>
+                  </div>
                 {range.note && (
                   <p className="text-sm text-gray-600 mb-2">{range.note}</p>
                 )}
@@ -188,7 +212,8 @@ export default function Map({
               </div>
             </Popup>
           </Marker>
-        ))}
+        )
+        })}
       </MapContainer>
     </div>
   )
