@@ -8,14 +8,14 @@ interface RangePageClientProps {
   rangeId: string
   rangeName: string
   subscriptionInfo: SubscriptionInfo
-  getContactUsMessage: (info: SubscriptionInfo) => string
+  contactUsMessage: string
 }
 
 export default function RangePageClient({
   rangeId,
   rangeName,
   subscriptionInfo,
-  getContactUsMessage
+  contactUsMessage
 }: RangePageClientProps) {
   const [showContactForm, setShowContactForm] = useState(false)
 
@@ -23,7 +23,7 @@ export default function RangePageClient({
     <>
       <div className="max-w-md mx-auto">
         <p className="text-gray-600 mb-4">
-          {getContactUsMessage(subscriptionInfo)}
+          {contactUsMessage}
         </p>
 
         {/* Check if this is a new range that needs to contact us */}

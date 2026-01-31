@@ -133,7 +133,7 @@ export default async function RangePage({ params }: RangePageProps) {
                 rangeId={range.id}
                 rangeName={range.name}
                 subscriptionInfo={subscriptionInfo}
-                getContactUsMessage={getContactUsMessage}
+                contactUsMessage={getContactUsMessage(subscriptionInfo)}
               />
             </div>
           )}
