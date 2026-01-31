@@ -5,6 +5,7 @@ import StatusButton from '@/components/StatusButton'
 import { formatTimeAgo, isStale } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Logo from '@/components/Logo'
+import Footer from '@/components/Footer'
 import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getSubscriptionStatusBadge, getContactUsMessage } from '@/lib/subscription-utils'
 
 interface RangeType {
@@ -259,6 +260,8 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
           </button>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

@@ -9,6 +9,7 @@ import OpeningHours from '@/components/OpeningHours'
 import TypicalBusyTimes from '@/components/TypicalBusyTimes'
 import MapWrapper from '@/components/MapWrapper'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import Logo from '@/components/Logo'
 import RangePageClient from './RangePageClient'
 import Link from 'next/link'
@@ -206,6 +207,8 @@ export default async function RangePage({ params }: RangePageProps) {
           </Link>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

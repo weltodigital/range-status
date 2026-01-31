@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Range } from '@/lib/supabase-db'
 import { AuthUser } from '@/lib/supabase-db'
+import Footer from '@/components/Footer'
 
 interface SettingsClientProps {
   range: Range
@@ -189,6 +190,8 @@ export default function SettingsClient({ range, session }: SettingsClientProps) 
           </a>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

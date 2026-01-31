@@ -5,6 +5,7 @@ import { Range } from '@/lib/supabase-db'
 import { useRouter } from 'next/navigation'
 import { generateQRCode } from '@/lib/qr'
 import Logo from '@/components/Logo'
+import Footer from '@/components/Footer'
 
 interface QRClientProps {
   range: Range
@@ -129,6 +130,8 @@ export default function QRClient({ range }: QRClientProps) {
           </ul>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

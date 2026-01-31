@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Range } from '@/lib/supabase-db'
 import Link from 'next/link'
+import Footer from '@/components/Footer'
 
 interface BillingClientProps {
   range: Range
@@ -305,6 +306,8 @@ export default function BillingClient({ range }: BillingClientProps) {
           </Link>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

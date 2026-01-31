@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Range } from '@/lib/supabase-db'
 import { useRouter } from 'next/navigation'
 import { WeeklyHours, DayHours, DEFAULT_HOURS, DAYS, DAY_NAMES } from '@/lib/hours'
+import Footer from '@/components/Footer'
 
 interface HoursClientProps {
   range: Range
@@ -188,6 +189,8 @@ export default function HoursClient({ range }: HoursClientProps) {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }
