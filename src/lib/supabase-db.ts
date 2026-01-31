@@ -333,7 +333,16 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
       user
     }
   } catch (error) {
-    console.error('Database query error:', error)
+    console.error('Database query error in createRangeWithUser:', error)
+
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack?.slice(0, 500)
+      })
+    }
+
     return null
   }
 }

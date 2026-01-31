@@ -84,15 +84,33 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Range creation error:', error)
 
-    if (error instanceof Error && error.message.includes('Unique constraint')) {
+    // Handle validation errors
+    if (error instanceof Error) {
+      if (error.name === 'ZodError') {
+        return NextResponse.json(
+          { error: 'Validation failed: ' + error.message },
+          { status: 400 }
+        )
+      }
+
+      if (error.message.includes('Unique constraint') ||
+          error.message.includes('duplicate key') ||
+          error.message.includes('already exists')) {
+        return NextResponse.json(
+          { error: 'Email or slug already exists. Please use different values.' },
+          { status: 400 }
+        )
+      }
+
+      // Return the actual error message for debugging
       return NextResponse.json(
-        { error: 'Email or slug already exists' },
-        { status: 400 }
+        { error: `Failed to create range: ${error.message}` },
+        { status: 500 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Failed to create range' },
+      { error: 'Failed to create range: Unknown error' },
       { status: 500 }
     )
   }
