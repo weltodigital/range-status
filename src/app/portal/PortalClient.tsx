@@ -89,7 +89,7 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
       <div className="bg-gradient-to-r from-secondary to-secondary/90 p-4 pb-8">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <Logo size="md" />
+            <Logo size="md" variant="dark" />
             <button
               onClick={handleLogout}
               className="text-sm text-white/80 hover:text-white px-3 py-1 rounded border border-white/30 hover:border-white/60 transition-all"
