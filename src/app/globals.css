@@ -55,10 +55,10 @@ body {
     color: #0A2239;
   }
 
-  /* Ensure ALL text within dark gradient backgrounds is white */
-  .bg-gradient-to-r.from-secondary *,
-  .bg-gradient-to-br.from-secondary *,
-  [class*="from-secondary"] *,
+  /* Ensure ALL text within dark gradient backgrounds is white EXCEPT inputs */
+  .bg-gradient-to-r.from-secondary *:not(input):not(select):not(textarea),
+  .bg-gradient-to-br.from-secondary *:not(input):not(select):not(textarea),
+  [class*="from-secondary"] *:not(input):not(select):not(textarea),
   [class*="from-secondary"] h1,
   [class*="from-secondary"] h2,
   [class*="from-secondary"] h3,
@@ -70,8 +70,8 @@ body {
   [class*="from-secondary"] div,
   [class*="from-secondary"] a,
   [class*="from-secondary"] label,
-  .text-white, .text-white *,
-  [class*="text-white"], [class*="text-white"] * {
+  .text-white, .text-white *:not(input):not(select):not(textarea),
+  [class*="text-white"], [class*="text-white"] *:not(input):not(select):not(textarea) {
     color: white !important;
   }
 
@@ -101,7 +101,19 @@ body {
   [class*="bg-secondary"] textarea,
   .bg-gradient-to-r input,
   .bg-gradient-to-r select,
-  .bg-gradient-to-r textarea {
+  .bg-gradient-to-r textarea,
+  .bg-gradient-to-br input,
+  .bg-gradient-to-br select,
+  .bg-gradient-to-br textarea {
+    color: #0A2239 !important;
+    background-color: white !important;
+  }
+
+  /* Very specific override for text-gray-900 inputs in dark gradients */
+  .bg-gradient-to-br.from-secondary input.text-gray-900,
+  .bg-gradient-to-r.from-secondary input.text-gray-900,
+  [class*="from-secondary"] input[class*="text-gray"],
+  [class*="bg-gradient"] input[class*="text-gray"] {
     color: #0A2239 !important;
     background-color: white !important;
   }
