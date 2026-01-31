@@ -259,11 +259,14 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
       isActive: true,
     }
 
-    // Try to add subscription fields - new ranges have no subscription by default
+    // Try to add subscription fields - new ranges get 7-day trial by default
     try {
-      rangeData.subscriptionType = null // No subscription type initially
-      rangeData.subscriptionStatus = 'expired' // Expired means they need to contact us
-      rangeData.subscriptionExpiry = null // No expiry date
+      const trialExpiry = new Date()
+      trialExpiry.setDate(trialExpiry.getDate() + 7) // 7-day trial
+
+      rangeData.subscriptionType = 'trial'
+      rangeData.subscriptionStatus = 'active'
+      rangeData.subscriptionExpiry = trialExpiry
     } catch (e) {
       console.log('Subscription fields not available in database yet')
     }

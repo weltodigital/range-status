@@ -23,8 +23,8 @@ export const STRIPE_CONFIG = {
   trialDays: 7,
   currency: 'gbp',
   prices: {
-    monthly: 2900, // £29.00 in pence
-    yearly: 29000,  // £290.00 in pence
+    monthly: 4900, // £49.00 in pence
+    yearly: 49000,  // £490.00 in pence
   }
 }
 

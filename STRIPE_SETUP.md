@@ -12,7 +12,7 @@ This guide walks you through setting up Stripe for subscription billing with 7-d
    - Name: "Range Status Monthly"
    - Description: "Monthly subscription to Range Status platform"
    - Price ID: Create recurring price
-     - Amount: £29.00 GBP
+     - Amount: £49.00 GBP
      - Billing period: Monthly
      - **Important**: Copy the Price ID (e.g., `price_1ABC123...`)
 
@@ -20,7 +20,7 @@ This guide walks you through setting up Stripe for subscription billing with 7-d
    - Name: "Range Status Yearly"
    - Description: "Yearly subscription to Range Status platform (2 months free)"
    - Price ID: Create recurring price
-     - Amount: £290.00 GBP
+     - Amount: £490.00 GBP
      - Billing period: Yearly
      - **Important**: Copy the Price ID
 

@@ -10,14 +10,14 @@ interface BillingClientProps {
 
 const PRICING = {
   monthly: {
-    price: 29,
+    price: 49,
     period: 'month',
     description: 'Perfect for getting started'
   },
   yearly: {
-    price: 290,
+    price: 490,
     period: 'year',
-    savings: 58, // £348 - £290 = £58 savings
+    savings: 98, // £588 - £490 = £98 savings
     description: 'Best value - 2 months free!'
   }
 }
