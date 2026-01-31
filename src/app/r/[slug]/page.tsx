@@ -8,6 +8,7 @@ import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getCont
 import OpeningHours from '@/components/OpeningHours'
 import TypicalBusyTimes from '@/components/TypicalBusyTimes'
 import MapWrapper from '@/components/MapWrapper'
+import Header from '@/components/Header'
 import Logo from '@/components/Logo'
 import RangePageClient from './RangePageClient'
 import Link from 'next/link'
@@ -71,24 +72,26 @@ export default async function RangePage({ params }: RangePageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      <Header />
+
+      {/* Range Header */}
       <div className="bg-gradient-to-r from-secondary to-secondary/90 py-8 px-4">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center mb-6">
             <Logo size="md" />
           </div>
           <div className="text-center text-white">
-            <h1 className="text-3xl font-bold mb-2 text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-white">
               {range.name}
             </h1>
-            <p className="text-xl text-white-90">
+            <p className="text-lg sm:text-xl text-white-90">
               {range.area}{range.town && `, ${range.town}`}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-8 -mt-4 relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-4 relative z-10">
 
         {/* Status Card */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-6 text-center">
