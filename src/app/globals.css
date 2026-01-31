@@ -46,12 +46,23 @@ body {
     color: #0A2239;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    color: #0A2239 !important;
+  /* Only apply brand color when not specifically overridden */
+  body h1, body h2, body h3, body h4, body h5, body h6 {
+    color: #0A2239;
   }
 
-  p, span, div, label, td, th {
-    color: #0A2239 !important;
+  body p, body span, body div, body label, body td, body th {
+    color: #0A2239;
+  }
+
+  /* Ensure white text always takes precedence */
+  .text-white, .text-white *,
+  [class*="text-white"], [class*="text-white"] *,
+  .bg-gradient-to-r .text-white,
+  .bg-gradient-to-r [class*="text-white"],
+  .bg-gradient-to-br .text-white,
+  .bg-gradient-to-br [class*="text-white"] {
+    color: white !important;
   }
 
   input, select, textarea {
@@ -108,6 +119,18 @@ body {
 
 /* Additional overrides for specific contexts where white text should remain */
 @layer components {
+  /* White text overrides for all contexts */
+  .text-white,
+  .text-white *,
+  h1.text-white,
+  h2.text-white,
+  h3.text-white,
+  h4.text-white,
+  h5.text-white,
+  h6.text-white,
+  p.text-white,
+  span.text-white,
+  div.text-white,
   .bg-primary .text-white,
   .bg-secondary .text-white,
   .bg-blue-600 .text-white,
@@ -115,19 +138,38 @@ body {
   .bg-red-600 .text-white,
   .bg-yellow-600 .text-white,
   .bg-gray-600 .text-white,
-  .text-white {
+  .bg-gradient-to-r .text-white,
+  .bg-gradient-to-r h1,
+  .bg-gradient-to-r h2,
+  .bg-gradient-to-r h3,
+  .bg-gradient-to-r h4,
+  .bg-gradient-to-r h5,
+  .bg-gradient-to-r h6,
+  .bg-gradient-to-r p,
+  .bg-gradient-to-br .text-white,
+  .bg-gradient-to-br h1,
+  .bg-gradient-to-br h2,
+  .bg-gradient-to-br h3,
+  .bg-gradient-to-br h4,
+  .bg-gradient-to-br h5,
+  .bg-gradient-to-br h6,
+  .bg-gradient-to-br p {
     color: white !important;
   }
 
-  .text-white-80 {
-    color: rgba(255, 255, 255, 0.8) !important;
+  /* White text with opacity */
+  .text-white\/80,
+  [class*="text-white/"] {
+    opacity: 0.8;
+    color: white !important;
   }
 
-  .text-white-90 {
-    color: rgba(255, 255, 255, 0.9) !important;
+  .text-white\/90 {
+    opacity: 0.9;
+    color: white !important;
   }
 
-  .hover-text-white:hover {
+  .hover\:text-white:hover {
     color: white !important;
   }
 }
