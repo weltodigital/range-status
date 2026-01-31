@@ -9,26 +9,19 @@ export default function NotFound() {
         </div>
 
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Page Not Found
+          Oops, no driving range here
         </h2>
 
         <p className="text-gray-600 mb-8">
-          The page you're looking for doesn't exist or may have been moved.
+          Looks like you've hit this page into the rough. Let's get you back to finding the perfect driving range.
         </p>
 
-        <div className="space-y-3">
-          <Link
-            href="/ranges"
-            className="block w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-          >
-            Browse Ranges
-          </Link>
-
+        <div>
           <Link
             href="/"
-            className="block w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="inline-block px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 font-medium transition-colors"
           >
-            Go Home
+            View All Ranges
           </Link>
         </div>
       </div>
