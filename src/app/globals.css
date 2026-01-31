@@ -212,6 +212,34 @@ body {
   .hover\:text-white:hover {
     color: white !important;
   }
+
+  /* White background buttons and elements should have dark text */
+  .bg-white,
+  .bg-white *,
+  button.bg-white,
+  button.bg-white *,
+  a.bg-white,
+  a.bg-white *,
+  .bg-gray-100,
+  .bg-gray-100 *,
+  button.bg-gray-100,
+  button.bg-gray-100 *,
+  a.bg-gray-100,
+  a.bg-gray-100 *,
+  [class*="bg-white"],
+  [class*="bg-white"] *,
+  [class*="bg-gray-100"],
+  [class*="bg-gray-100"] * {
+    color: #0A2239 !important;
+  }
+
+  /* Specific override for text-secondary on white backgrounds */
+  .bg-white.text-secondary,
+  .bg-gray-100.text-secondary,
+  button.bg-white.text-secondary,
+  a.bg-white.text-secondary {
+    color: #0A2239 !important;
+  }
 }
 
 /* Print styles */
