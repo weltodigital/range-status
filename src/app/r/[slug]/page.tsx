@@ -9,6 +9,7 @@ import OpeningHours from '@/components/OpeningHours'
 import TypicalBusyTimes from '@/components/TypicalBusyTimes'
 import MapWrapper from '@/components/MapWrapper'
 import Logo from '@/components/Logo'
+import RangePageClient from './RangePageClient'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -128,46 +129,12 @@ export default async function RangePage({ params }: RangePageProps) {
                 </div>
               </div>
 
-              <div className="max-w-md mx-auto">
-                <p className="text-gray-600 mb-4">
-                  {getContactUsMessage(subscriptionInfo)}
-                </p>
-
-                {/* Check if this is a new range that needs to contact us */}
-                {subscriptionInfo.isExpired && !subscriptionInfo.isTrial && !subscriptionInfo.isPaid && !subscriptionInfo.isCanceled ? (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-green-800 mb-2">Get Listed with Live Status</h3>
-                    <p className="text-sm text-green-700 mb-3">
-                      This range is in our directory. Contact us to set up live status updates and subscription features.
-                    </p>
-                    <a
-                      href="mailto:hello@rangestatus.com?subject=Set up live status for {range.name}"
-                      className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm font-medium mr-2"
-                    >
-                      Contact Us →
-                    </a>
-                    <a
-                      href="/portal"
-                      className="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium"
-                    >
-                      Portal Login
-                    </a>
-                  </div>
-                ) : (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-800 mb-2">Subscribe for Live Status</h3>
-                    <p className="text-sm text-blue-700 mb-3">
-                      Get real-time busy status updates, historical data, and more features.
-                    </p>
-                    <a
-                      href="/portal"
-                      className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm font-medium"
-                    >
-                      Manage Subscription →
-                    </a>
-                  </div>
-                )}
-              </div>
+              <RangePageClient
+                rangeId={range.id}
+                rangeName={range.name}
+                subscriptionInfo={subscriptionInfo}
+                getContactUsMessage={getContactUsMessage}
+              />
             </div>
           )}
         </div>
