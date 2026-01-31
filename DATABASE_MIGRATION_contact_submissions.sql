@@ -1,7 +1,7 @@
 -- Create contact_submissions table for storing range owner contact requests
 CREATE TABLE contact_submissions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    range_id UUID NOT NULL REFERENCES ranges(id) ON DELETE CASCADE,
+    range_id TEXT NOT NULL REFERENCES ranges(id) ON DELETE CASCADE,
     contact_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(100) NOT NULL,
