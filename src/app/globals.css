@@ -55,13 +55,23 @@ body {
     color: #0A2239;
   }
 
-  /* Ensure white text always takes precedence */
+  /* Ensure ALL text within dark gradient backgrounds is white */
+  .bg-gradient-to-r.from-secondary *,
+  .bg-gradient-to-br.from-secondary *,
+  [class*="from-secondary"] *,
+  [class*="from-secondary"] h1,
+  [class*="from-secondary"] h2,
+  [class*="from-secondary"] h3,
+  [class*="from-secondary"] h4,
+  [class*="from-secondary"] h5,
+  [class*="from-secondary"] h6,
+  [class*="from-secondary"] p,
+  [class*="from-secondary"] span,
+  [class*="from-secondary"] div,
+  [class*="from-secondary"] a,
+  [class*="from-secondary"] label,
   .text-white, .text-white *,
-  [class*="text-white"], [class*="text-white"] *,
-  .bg-gradient-to-r .text-white,
-  .bg-gradient-to-r [class*="text-white"],
-  .bg-gradient-to-br .text-white,
-  .bg-gradient-to-br [class*="text-white"] {
+  [class*="text-white"], [class*="text-white"] * {
     color: white !important;
   }
 
@@ -117,9 +127,48 @@ body {
   }
 }
 
-/* Additional overrides for specific contexts where white text should remain */
+/* COMPREHENSIVE white text overrides for dark backgrounds */
 @layer components {
-  /* White text overrides for all contexts */
+  /* Force ALL text within dark gradient backgrounds to be white */
+  .bg-gradient-to-r.from-secondary,
+  .bg-gradient-to-r.from-secondary *,
+  .bg-gradient-to-r.from-secondary h1,
+  .bg-gradient-to-r.from-secondary h2,
+  .bg-gradient-to-r.from-secondary h3,
+  .bg-gradient-to-r.from-secondary h4,
+  .bg-gradient-to-r.from-secondary h5,
+  .bg-gradient-to-r.from-secondary h6,
+  .bg-gradient-to-r.from-secondary p,
+  .bg-gradient-to-r.from-secondary span,
+  .bg-gradient-to-r.from-secondary div,
+  .bg-gradient-to-r.from-secondary a,
+  .bg-gradient-to-r.from-secondary label,
+  .bg-gradient-to-br.from-secondary,
+  .bg-gradient-to-br.from-secondary *,
+  .bg-gradient-to-br.from-secondary h1,
+  .bg-gradient-to-br.from-secondary h2,
+  .bg-gradient-to-br.from-secondary h3,
+  .bg-gradient-to-br.from-secondary h4,
+  .bg-gradient-to-br.from-secondary h5,
+  .bg-gradient-to-br.from-secondary h6,
+  .bg-gradient-to-br.from-secondary p,
+  .bg-gradient-to-br.from-secondary span,
+  .bg-gradient-to-br.from-secondary div,
+  .bg-gradient-to-br.from-secondary a,
+  .bg-gradient-to-br.from-secondary label,
+  [class*="from-secondary"],
+  [class*="from-secondary"] *,
+  [class*="from-secondary"] h1,
+  [class*="from-secondary"] h2,
+  [class*="from-secondary"] h3,
+  [class*="from-secondary"] h4,
+  [class*="from-secondary"] h5,
+  [class*="from-secondary"] h6,
+  [class*="from-secondary"] p,
+  [class*="from-secondary"] span,
+  [class*="from-secondary"] div,
+  [class*="from-secondary"] a,
+  [class*="from-secondary"] label,
   .text-white,
   .text-white *,
   h1.text-white,
@@ -131,29 +180,20 @@ body {
   p.text-white,
   span.text-white,
   div.text-white,
-  .bg-primary .text-white,
-  .bg-secondary .text-white,
-  .bg-blue-600 .text-white,
-  .bg-green-600 .text-white,
-  .bg-red-600 .text-white,
-  .bg-yellow-600 .text-white,
-  .bg-gray-600 .text-white,
-  .bg-gradient-to-r .text-white,
-  .bg-gradient-to-r h1,
-  .bg-gradient-to-r h2,
-  .bg-gradient-to-r h3,
-  .bg-gradient-to-r h4,
-  .bg-gradient-to-r h5,
-  .bg-gradient-to-r h6,
-  .bg-gradient-to-r p,
-  .bg-gradient-to-br .text-white,
-  .bg-gradient-to-br h1,
-  .bg-gradient-to-br h2,
-  .bg-gradient-to-br h3,
-  .bg-gradient-to-br h4,
-  .bg-gradient-to-br h5,
-  .bg-gradient-to-br h6,
-  .bg-gradient-to-br p {
+  .bg-primary,
+  .bg-primary *,
+  .bg-secondary,
+  .bg-secondary *,
+  .bg-blue-600,
+  .bg-blue-600 *,
+  .bg-green-600,
+  .bg-green-600 *,
+  .bg-red-600,
+  .bg-red-600 *,
+  .bg-yellow-600,
+  .bg-yellow-600 *,
+  .bg-gray-600,
+  .bg-gray-600 * {
     color: white !important;
   }
 
