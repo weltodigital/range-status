@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import RangesClient from '@/components/RangesClient'
 import PortalClient from '@/app/portal/PortalClient'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import Logo from '@/components/Logo'
 import { getRangeById } from '@/lib/supabase-db'
 
@@ -70,6 +71,8 @@ export default async function HomePage() {
           <RangesClient />
         </Suspense>
       </div>
+
+      <Footer />
     </div>
   )
 }

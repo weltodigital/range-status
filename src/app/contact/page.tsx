@@ -1,4 +1,5 @@
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 export const metadata = {
   title: 'Contact Us - Range Status',
@@ -38,7 +39,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                  <p className="text-gray-600">hello@rangestatus.com</p>
+                  <p className="text-gray-600">rangestatus@weltodigital.com</p>
                   <p className="text-sm text-gray-500 mt-1">We typically respond within 24 hours</p>
                 </div>
               </div>
@@ -212,7 +213,7 @@ export default function ContactPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:hello@rangestatus.com"
+              href="mailto:rangestatus@weltodigital.com"
               className="bg-white text-secondary px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium inline-block"
             >
               Email Us Directly
@@ -226,6 +227,8 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

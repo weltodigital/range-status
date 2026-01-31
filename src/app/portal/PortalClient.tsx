@@ -142,7 +142,7 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
                     {getContactUsMessage(subscriptionInfo)}
                   </p>
                   <a
-                    href={`mailto:hello@rangestatus.com?subject=Set up full account for ${range.name}&body=Hi, I'd like to set up the full account and subscription for ${range.name} (${range.area}). Please let me know the next steps.`}
+                    href={`mailto:rangestatus@weltodigital.com?subject=Set up full account for ${range.name}&body=Hi, I'd like to set up the full account and subscription for ${range.name} (${range.area}). Please let me know the next steps.`}
                     className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm font-medium mr-2"
                   >
                     Contact Us First →

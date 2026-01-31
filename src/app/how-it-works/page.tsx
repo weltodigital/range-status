@@ -1,4 +1,5 @@
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import Logo from '@/components/Logo'
 import Link from 'next/link'
 
@@ -129,6 +130,8 @@ export default function HowItWorksPage() {
           </Link>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }
