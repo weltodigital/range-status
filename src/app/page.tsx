@@ -56,11 +56,10 @@ export default async function HomePage() {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-secondary to-secondary/90 py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Logo size="lg" className="mx-auto mb-8" />
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
             See How Busy Driving Ranges Are Before You Go
           </h1>
-          <p className="text-white/90 text-lg sm:text-xl max-w-2xl mx-auto">
+          <p className="text-white text-lg sm:text-xl max-w-2xl mx-auto">
             Find range crowd levels in real-time near you.
           </p>
         </div>

@@ -92,14 +92,14 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
             <Logo size="md" />
             <button
               onClick={handleLogout}
-              className="text-sm text-white-80 hover-text-white px-3 py-1 rounded border border-white/30 hover:border-white/60 transition-all"
+              className="text-sm text-white/80 hover:text-white px-3 py-1 rounded border border-white/30 hover:border-white/60 transition-all"
             >
               Logout
             </button>
           </div>
           <div className="text-center text-white">
             <h1 className="text-2xl font-bold mb-1 text-white">{range.name}</h1>
-            <p className="text-white-80">{range.area}{range.town && `, ${range.town}`}</p>
+            <p className="text-white/80">{range.area}{range.town && `, ${range.town}`}</p>
           </div>
         </div>
       </div>

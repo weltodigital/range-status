@@ -59,7 +59,7 @@ export default function LoginPage() {
           <h2 className="text-3xl font-bold text-white">
             Range Status App
           </h2>
-          <p className="mt-2 text-white-80">
+          <p className="mt-2 text-white/80">
             Sign in to manage your golf driving range
           </p>
         </div>

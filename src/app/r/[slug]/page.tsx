@@ -84,7 +84,7 @@ export default async function RangePage({ params }: RangePageProps) {
             <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-white">
               {range.name}
             </h1>
-            <p className="text-lg sm:text-xl text-white-90">
+            <p className="text-lg sm:text-xl text-white/90">
               {range.area}{range.town && `, ${range.town}`}
             </p>
           </div>

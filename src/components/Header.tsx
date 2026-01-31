@@ -14,7 +14,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <Logo size="sm" />
+              <Logo size="sm" variant="dark" />
             </Link>
           </div>
 
