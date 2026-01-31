@@ -5,17 +5,18 @@ export async function GET() {
   try {
     console.log("Testing range creation...")
 
-    // Test data - using your exact data from the form
+    // Test data with unique timestamp to avoid conflicts
+    const timestamp = Date.now()
     const testData = {
-      name: "test range",
-      slug: "test-range",
+      name: `test range ${timestamp}`,
+      slug: `test-range-${timestamp}`,
       area: "Hampshire",
       town: "Havant",
-      address: "tes range range",
+      address: "test range address",
       postcode: "PO9 3LR",
       latitude: 50.84187196252509,
       longitude: -0.9879131479193698,
-      email: "edwelton0@gmail.com",
+      email: `test${timestamp}@example.com`,
       password: "yl3ygwVWXOmW",
     }
 

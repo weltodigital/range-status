@@ -286,6 +286,7 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
 
     if (rangeError) {
       console.error('Error creating range:', rangeError)
+      console.error('Range data being inserted:', JSON.stringify(rangeData, null, 2))
       return null
     }
 
@@ -308,6 +309,12 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
 
     if (userError) {
       console.error('Error creating user:', userError)
+      console.error('User data being inserted:', {
+        id: userId,
+        email: data.email,
+        role: 'RANGE',
+        rangeId: range.id,
+      })
       // Clean up range if user creation failed
       await supabase
         .from('ranges')
