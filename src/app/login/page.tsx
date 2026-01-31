@@ -56,9 +56,6 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Logo size="lg" variant="dark" className="mx-auto mb-4" />
-          <h2 className="text-3xl font-bold text-white">
-            Range Status App
-          </h2>
           <p className="mt-2 text-white/80">
             Sign in to manage your golf driving range
           </p>
