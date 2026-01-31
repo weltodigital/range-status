@@ -240,6 +240,32 @@ body {
   a.bg-white.text-secondary {
     color: #0A2239 !important;
   }
+
+  /* Ensure all dark background buttons have white text */
+  button[class*="bg-secondary"],
+  a[class*="bg-secondary"],
+  button[class*="bg-primary"],
+  a[class*="bg-primary"],
+  button[class*="bg-blue"],
+  a[class*="bg-blue"],
+  button[class*="bg-green"],
+  a[class*="bg-green"],
+  button[class*="bg-red"],
+  a[class*="bg-red"],
+  button[class*="bg-gray-6"],
+  a[class*="bg-gray-6"],
+  button[class*="bg-gray-7"],
+  a[class*="bg-gray-7"],
+  button[class*="bg-gray-8"],
+  a[class*="bg-gray-8"],
+  button[class*="bg-gray-9"],
+  a[class*="bg-gray-9"],
+  .btn-primary,
+  .btn-secondary,
+  .button-primary,
+  .button-secondary {
+    color: white !important;
+  }
 }
 
 /* Print styles */
