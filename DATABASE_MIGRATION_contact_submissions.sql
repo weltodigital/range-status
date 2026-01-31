@@ -21,7 +21,7 @@ CREATE POLICY "Admins can view all contact submissions" ON contact_submissions
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM users
-            WHERE users.id = auth.uid()
+            WHERE users.id = auth.uid()::text
             AND users.role = 'ADMIN'
         )
     );
@@ -31,7 +31,7 @@ CREATE POLICY "Admins can insert contact submissions" ON contact_submissions
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM users
-            WHERE users.id = auth.uid()
+            WHERE users.id = auth.uid()::text
             AND users.role = 'ADMIN'
         )
     );
@@ -41,7 +41,7 @@ CREATE POLICY "Admins can update contact submissions" ON contact_submissions
     FOR UPDATE USING (
         EXISTS (
             SELECT 1 FROM users
-            WHERE users.id = auth.uid()
+            WHERE users.id = auth.uid()::text
             AND users.role = 'ADMIN'
         )
     );
