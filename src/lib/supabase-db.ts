@@ -771,3 +771,136 @@ export async function updateRangeSubscription(rangeId: string, subscriptionData:
     return null
   }
 }
+
+// Contact submission types
+export interface ContactSubmission {
+  id: string
+  rangeId: string
+  contactName: string
+  email: string
+  phone: string
+  status: 'pending' | 'contacted' | 'converted' | 'declined'
+  notes?: string | null
+  submittedAt: Date
+  contactedAt?: Date | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+// Create a new contact submission
+export async function createContactSubmission(submission: {
+  rangeId: string
+  contactName: string
+  email: string
+  phone: string
+}): Promise<ContactSubmission | null> {
+  try {
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .insert({
+        range_id: submission.rangeId,
+        contact_name: submission.contactName,
+        email: submission.email,
+        phone: submission.phone,
+        status: 'pending'
+      })
+      .select('*')
+      .single()
+
+    if (error) {
+      console.error('Error creating contact submission:', error)
+      return null
+    }
+
+    return {
+      id: data.id,
+      rangeId: data.range_id,
+      contactName: data.contact_name,
+      email: data.email,
+      phone: data.phone,
+      status: data.status,
+      notes: data.notes,
+      submittedAt: new Date(data.submitted_at),
+      contactedAt: data.contacted_at ? new Date(data.contacted_at) : null,
+      createdAt: new Date(data.created_at),
+      updatedAt: new Date(data.updated_at)
+    }
+  } catch (error) {
+    console.error('Database error creating contact submission:', error)
+    return null
+  }
+}
+
+// Get all contact submissions for admin
+export async function getContactSubmissions(): Promise<ContactSubmission[]> {
+  try {
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .select(`
+        *,
+        ranges (
+          name,
+          slug
+        )
+      `)
+      .order('submitted_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching contact submissions:', error)
+      return []
+    }
+
+    return data.map(submission => ({
+      id: submission.id,
+      rangeId: submission.range_id,
+      contactName: submission.contact_name,
+      email: submission.email,
+      phone: submission.phone,
+      status: submission.status,
+      notes: submission.notes,
+      submittedAt: new Date(submission.submitted_at),
+      contactedAt: submission.contacted_at ? new Date(submission.contacted_at) : null,
+      createdAt: new Date(submission.created_at),
+      updatedAt: new Date(submission.updated_at),
+      // Add range info for admin display
+      range: submission.ranges
+    }))
+  } catch (error) {
+    console.error('Database error fetching contact submissions:', error)
+    return []
+  }
+}
+
+// Update contact submission status
+export async function updateContactSubmissionStatus(
+  id: string,
+  status: 'pending' | 'contacted' | 'converted' | 'declined',
+  notes?: string
+): Promise<boolean> {
+  try {
+    const updateData: any = { status }
+
+    if (status === 'contacted' || status === 'converted') {
+      updateData.contacted_at = new Date().toISOString()
+    }
+
+    if (notes !== undefined) {
+      updateData.notes = notes
+    }
+
+    const { error } = await supabase
+      .from('contact_submissions')
+      .update(updateData)
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error updating contact submission:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Database error updating contact submission:', error)
+    return false
+  }
+}

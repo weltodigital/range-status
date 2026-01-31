@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createContactSubmission } from '@/lib/supabase-db'
 
 const contactSchema = z.object({
   rangeId: z.string().min(1, 'Range ID is required'),
@@ -16,14 +17,26 @@ export async function POST(request: Request) {
     // Validate the request body
     const validatedData = contactSchema.parse(body)
 
-    // In a real implementation, you would:
-    // 1. Save to database (contact requests table)
-    // 2. Send notification email to admin
-    // 3. Maybe send confirmation email to range owner
+    // Save contact submission to database
+    const submission = await createContactSubmission({
+      rangeId: validatedData.rangeId,
+      contactName: validatedData.contactName,
+      email: validatedData.email,
+      phone: validatedData.phone
+    })
 
-    // For now, we'll just log the request
-    console.log('Range Owner Contact Request:', {
-      timestamp: new Date().toISOString(),
+    if (!submission) {
+      console.error('Failed to save contact submission to database')
+      return NextResponse.json(
+        { error: 'Failed to save contact request' },
+        { status: 500 }
+      )
+    }
+
+    // Log the successful submission
+    console.log('Range Owner Contact Request Saved:', {
+      submissionId: submission.id,
+      timestamp: submission.submittedAt.toISOString(),
       rangeId: validatedData.rangeId,
       rangeName: validatedData.rangeName,
       contactName: validatedData.contactName,
@@ -31,10 +44,9 @@ export async function POST(request: Request) {
       phone: validatedData.phone
     })
 
-    // TODO: Implement email notifications
+    // TODO: Optional future enhancements
     // - Send admin notification email
     // - Send confirmation email to range owner
-    // - Save to database for tracking
 
     return NextResponse.json({
       success: true,
