@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Range } from '@/lib/supabase-db'
 import { formatTimeAgo, isStale, getStatusColorLight } from '@/lib/utils'
+import { getSubscriptionInfo, shouldShowStatusUpdate } from '@/lib/subscription-utils'
 
 interface RangeCardProps {
   range: Range & {
@@ -13,6 +14,10 @@ interface RangeCardProps {
 export default function RangeCard({ range }: RangeCardProps) {
   const lastUpdated = range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null
   const isDataStale = lastUpdated ? isStale(lastUpdated) : true
+
+  // Check subscription status
+  const subscriptionInfo = getSubscriptionInfo(range)
+  const canShowStatus = shouldShowStatusUpdate(subscriptionInfo)
 
   return (
     <Link
@@ -27,9 +32,15 @@ export default function RangeCard({ range }: RangeCardProps) {
           </p>
         </div>
         <div className="text-right">
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColorLight(range.status)}`}>
-            {range.status}
-          </span>
+          {canShowStatus ? (
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColorLight(range.status)}`}>
+              {range.status}
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+              Status Unavailable
+            </span>
+          )}
         </div>
       </div>
 
