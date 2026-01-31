@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and Description */}
           <div className="md:col-span-2">
-            <Logo size="md" className="mb-4" />
+            <Logo size="md" variant="dark" className="mb-4" />
             <p className="text-gray-300 text-sm max-w-md">
               Helping golfers find the best times to visit driving ranges with real-time crowd information across the UK.
             </p>
