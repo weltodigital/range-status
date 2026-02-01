@@ -150,12 +150,13 @@ export default function ContactPage() {
 
               <div>
                 <label htmlFor="rangeName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Range Name
+                  Range Name *
                 </label>
                 <input
                   type="text"
                   id="rangeName"
                   name="rangeName"
+                  required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors"
                   placeholder="Your golf driving range name"
                 />
@@ -163,25 +164,25 @@ export default function ContactPage() {
 
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
+                  Phone Number *
                 </label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
+                  required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors"
                 />
               </div>
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Message *
+                  Message
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
-                  required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors resize-none"
                   placeholder="Tell us about your range and how we can help..."
                 ></textarea>
