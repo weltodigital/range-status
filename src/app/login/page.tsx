@@ -110,6 +110,18 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
+
+          <div className="text-center">
+            <p className="text-white/70 text-sm">
+              Forgotten your password?{' '}
+              <a
+                href="mailto:rangestatus@weltodigital.com?subject=Password Reset Request"
+                className="text-white hover:text-white/80 underline"
+              >
+                Contact support
+              </a>
+            </p>
+          </div>
         </form>
       </div>
     </div>
