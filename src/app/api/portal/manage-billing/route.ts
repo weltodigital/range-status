@@ -18,7 +18,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!range.stripeCustomerId) {
-      return NextResponse.json({ error: 'No billing account found' }, { status: 404 })
+      return NextResponse.json({
+        error: 'Unable to access billing portal. Please contact support.',
+        code: 'NO_BILLING_ACCOUNT'
+      }, { status: 404 })
     }
 
     // Create Stripe billing portal session

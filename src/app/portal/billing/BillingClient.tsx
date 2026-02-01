@@ -86,7 +86,9 @@ export default function BillingClient({ range }: BillingClientProps) {
       if (data.url) {
         window.location.href = data.url
       } else {
-        alert('Unable to access billing portal. Please contact support.')
+        // Show user-friendly error message
+        const errorMessage = data.error || 'Unable to access billing portal. Please contact support.'
+        alert(errorMessage)
       }
     } catch (error) {
       console.error('Billing portal error:', error)
@@ -145,7 +147,7 @@ export default function BillingClient({ range }: BillingClientProps) {
                 )}
               </div>
 
-              {!isOnTrial && currentSubscription.status === 'active' && (
+              {!isOnTrial && currentSubscription.status === 'active' && range.stripeCustomerId && (
                 <button
                   onClick={handleManageBilling}
                   disabled={loading}
