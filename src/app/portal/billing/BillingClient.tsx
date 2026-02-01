@@ -147,7 +147,7 @@ export default function BillingClient({ range }: BillingClientProps) {
                 )}
               </div>
 
-              {!isOnTrial && currentSubscription.status === 'active' && range.stripeCustomerId && (
+              {!isOnTrial && currentSubscription.status === 'active' && (
                 <button
                   onClick={handleManageBilling}
                   disabled={loading}

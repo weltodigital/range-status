@@ -18,10 +18,19 @@ export async function POST(request: NextRequest) {
     }
 
     if (!range.stripeCustomerId) {
-      return NextResponse.json({
-        error: 'Unable to access billing portal. Please contact support.',
-        code: 'NO_BILLING_ACCOUNT'
-      }, { status: 404 })
+      // For ranges with active subscriptions but no Stripe customer ID,
+      // this likely means they were set up before Stripe integration was complete
+      if (range.subscriptionStatus === 'active') {
+        return NextResponse.json({
+          error: 'Billing portal setup required. Please contact support to link your subscription.',
+          code: 'BILLING_SETUP_REQUIRED'
+        }, { status: 404 })
+      } else {
+        return NextResponse.json({
+          error: 'No billing account found. Please subscribe to access billing management.',
+          code: 'NO_BILLING_ACCOUNT'
+        }, { status: 404 })
+      }
     }
 
     // Create Stripe billing portal session
