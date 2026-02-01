@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Handle mock/development customer ID
+    if (range.stripeCustomerId === 'cus_mock_development_customer') {
+      return NextResponse.json({
+        error: 'Development mode - billing portal would redirect to Stripe customer portal',
+        mockRedirect: true,
+        message: 'In production, this would redirect to Stripe billing portal'
+      }, { status: 200 })
+    }
+
     // Create Stripe billing portal session
     const portalSession = await createBillingPortalSession(range.stripeCustomerId)
 

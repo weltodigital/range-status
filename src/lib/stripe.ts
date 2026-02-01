@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 let stripe: Stripe | null = null
 
 // Lazy initialize Stripe to avoid build-time errors
-function getStripe(): Stripe {
+export function getStripe(): Stripe {
   if (!stripe) {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new Error('Stripe not configured - missing STRIPE_SECRET_KEY')

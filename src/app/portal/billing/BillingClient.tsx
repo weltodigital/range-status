@@ -85,6 +85,9 @@ export default function BillingClient({ range }: BillingClientProps) {
 
       if (data.url) {
         window.location.href = data.url
+      } else if (data.mockRedirect) {
+        // Handle development/mock mode
+        alert(data.message || 'Development mode: Billing portal functionality confirmed!')
       } else {
         // Show user-friendly error message
         const errorMessage = data.error || 'Unable to access billing portal. Please contact support.'
