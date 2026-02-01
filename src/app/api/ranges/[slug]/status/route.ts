@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { getRangeBySlug } from '@/lib/supabase-db'
 import { isStale, formatTimeAgo } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(
   request: Request,
   { params }: { params: { slug: string } }
@@ -21,13 +24,20 @@ export async function GET(
     const lastUpdated = range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null
     const isDataStale = lastUpdated ? isStale(lastUpdated) : true
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: range.status,
       note: range.note,
       lastUpdated: lastUpdated ? lastUpdated.toISOString() : null,
       lastUpdatedText: lastUpdated ? formatTimeAgo(lastUpdated) : 'Never',
       isStale: isDataStale
     })
+
+    // Set cache headers to prevent caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+
+    return response
 
   } catch (error) {
     console.error('Error fetching range status:', error)

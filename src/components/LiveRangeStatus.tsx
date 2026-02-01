@@ -38,10 +38,35 @@ export default function LiveRangeStatus({
 
   const fetchStatus = useCallback(async () => {
     try {
-      const response = await fetch(`/api/ranges/${slug}/status`)
+      console.log(`[LiveRangeStatus] Fetching status for ${slug} at ${new Date().toLocaleTimeString()}`)
+      const response = await fetch(`/api/ranges/${slug}/status`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      })
       if (response.ok) {
         const newStatus: RangeStatus = await response.json()
-        setStatus(newStatus)
+        console.log(`[LiveRangeStatus] Received status:`, newStatus)
+
+        // Only update if there's actually a change
+        setStatus(prevStatus => {
+          const hasChanged =
+            prevStatus.status !== newStatus.status ||
+            prevStatus.note !== newStatus.note ||
+            prevStatus.lastUpdated !== newStatus.lastUpdated ||
+            prevStatus.isStale !== newStatus.isStale
+
+          if (hasChanged) {
+            console.log(`[LiveRangeStatus] Status changed - updating UI`)
+            return newStatus
+          } else {
+            console.log(`[LiveRangeStatus] No changes detected`)
+            return prevStatus
+          }
+        })
+      } else {
+        console.error('Failed to fetch status - response not ok:', response.status)
       }
     } catch (error) {
       console.error('Failed to fetch status:', error)
