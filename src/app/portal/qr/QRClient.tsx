@@ -96,11 +96,6 @@ export default function QRClient({ range }: QRClientProps) {
                 </p>
               </div>
 
-              <div className="hidden print:block mt-8 pt-8 border-t border-gray-200">
-                <div className="flex justify-center">
-                  <Logo variant="dark" size="md" />
-                </div>
-              </div>
 
               <div className="print:hidden space-y-3">
                 <button
