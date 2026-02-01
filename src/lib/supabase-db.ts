@@ -1009,3 +1009,56 @@ export async function activateRangeWithUser(data: ActivateRangeData): Promise<{ 
     return null
   }
 }
+
+export async function updateUserEmail(rangeId: string, newEmail: string): Promise<boolean> {
+  try {
+    // Check if the new email already exists
+    const emailExists = await checkEmailExists(newEmail)
+    if (emailExists) {
+      console.error('Email already exists')
+      return false
+    }
+
+    // Update the user's email for the given range
+    const { error } = await supabase
+      .from('users')
+      .update({ email: newEmail })
+      .eq('rangeId', rangeId)
+      .eq('role', 'RANGE')
+
+    if (error) {
+      console.error('Error updating user email:', error)
+      return false
+    }
+
+    console.log(`Email updated for range ${rangeId} to ${newEmail}`)
+    return true
+  } catch (error) {
+    console.error('Error in updateUserEmail:', error)
+    return false
+  }
+}
+
+export async function adminResetUserPassword(rangeId: string, newPassword: string): Promise<boolean> {
+  try {
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+
+    // Update the user's password for the given range
+    const { error } = await supabase
+      .from('users')
+      .update({ passwordHash })
+      .eq('rangeId', rangeId)
+      .eq('role', 'RANGE')
+
+    if (error) {
+      console.error('Error updating user password:', error)
+      return false
+    }
+
+    console.log(`Password updated for range ${rangeId}`)
+    return true
+  } catch (error) {
+    console.error('Error in adminResetUserPassword:', error)
+    return false
+  }
+}

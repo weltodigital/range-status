@@ -53,6 +53,8 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
   const [newPassword, setNewPassword] = useState('')
   const [portalEmail, setPortalEmail] = useState('')
   const [portalPassword, setPortalPassword] = useState('')
+  const [editingEmail, setEditingEmail] = useState(false)
+  const [newEmail, setNewEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -158,6 +160,47 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
     }
   }
 
+  const handleUpdateEmail = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newEmail.trim()) {
+      setError('Please enter a new email')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+    setSuccessMessage('')
+
+    try {
+      const response = await fetch(`/api/admin/ranges/${range.id}/update-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: newEmail.trim(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccessMessage('Email updated successfully!')
+        setEditingEmail(false)
+        setNewEmail('')
+        // Refresh the page to show the new email
+        window.location.reload()
+      } else {
+        setError(data.error || 'Failed to update email')
+      }
+    } catch (err) {
+      console.error('Error updating email:', err)
+      setError('Failed to update email')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleResetPassword = async () => {
     if (!newPassword.trim()) {
       setError('Please enter a new password')
@@ -169,7 +212,7 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
     setSuccessMessage('')
 
     try {
-      const response = await fetch(`/api/admin/ranges/${range.id}/reset-password`, {
+      const response = await fetch(`/api/admin/ranges/${range.id}/admin-reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -569,47 +612,85 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
               {portalUser ? (
                 <div className="space-y-4">
                   <div>
-                    <span className="text-sm text-gray-600">Email:</span>
-                    <p className="text-sm text-gray-900 font-medium">{portalUser.email}</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">Email:</span>
+                      {!editingEmail && (
+                        <button
+                          onClick={() => {
+                            setEditingEmail(true)
+                            setNewEmail(portalUser.email)
+                          }}
+                          className="text-xs text-blue-600 hover:text-blue-800"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
+
+                    {editingEmail ? (
+                      <form onSubmit={handleUpdateEmail} className="space-y-2">
+                        <input
+                          type="email"
+                          value={newEmail}
+                          onChange={(e) => setNewEmail(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Enter new email"
+                          required
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            type="submit"
+                            disabled={loading || !newEmail.trim()}
+                            className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:opacity-50"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingEmail(false)
+                              setNewEmail('')
+                            }}
+                            className="px-3 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <p className="text-sm text-gray-900 font-medium">{portalUser.email}</p>
+                    )}
                   </div>
 
-                  {!range.isActive ? (
-                    <div>
-                      <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                        Reset Password
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          id="newPassword"
-                          type="text"
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                          placeholder="Enter new password"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={generateRandomPassword}
-                          className="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                        >
-                          Generate
-                        </button>
-                      </div>
+                  <div>
+                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                      Reset Password
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        id="newPassword"
+                        type="text"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
                       <button
-                        onClick={handleResetPassword}
-                        disabled={loading || !newPassword.trim()}
-                        className="mt-2 w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50"
+                        type="button"
+                        onClick={generateRandomPassword}
+                        className="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
                       >
-                        Reset Password
+                        Generate
                       </button>
                     </div>
-                  ) : (
-                    <div className="bg-gray-50 border border-gray-200 rounded p-3">
-                      <p className="text-sm text-gray-600">
-                        Password changes are managed by the range owner through their portal settings once the range is active.
-                      </p>
-                    </div>
-                  )}
+                    <button
+                      onClick={handleResetPassword}
+                      disabled={loading || !newPassword.trim()}
+                      className="mt-2 w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50"
+                    >
+                      {loading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
