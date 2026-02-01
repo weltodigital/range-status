@@ -78,6 +78,8 @@ export async function getAllRanges(): Promise<Range[]> {
           ...range,
           lastUpdatedAt: range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null,
           createdAt: new Date(range.createdAt),
+          stripeCustomerId: (range as any).stripecustomerid || null,
+          stripeSubscriptionId: (range as any).stripesubscriptionid || null,
           users: users || []
         }
       })
@@ -763,10 +765,10 @@ export async function updateRangeSubscription(rangeId: string, subscriptionData:
       updateData.subscriptionExpiry = subscriptionData.subscriptionExpiry?.toISOString() || null
     }
     if (subscriptionData.stripeCustomerId !== undefined) {
-      updateData.stripeCustomerId = subscriptionData.stripeCustomerId
+      updateData.stripecustomerid = subscriptionData.stripeCustomerId
     }
     if (subscriptionData.stripeSubscriptionId !== undefined) {
-      updateData.stripeSubscriptionId = subscriptionData.stripeSubscriptionId
+      updateData.stripesubscriptionid = subscriptionData.stripeSubscriptionId
     }
 
     const { data: range, error } = await supabase
