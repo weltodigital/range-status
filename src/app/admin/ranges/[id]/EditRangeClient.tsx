@@ -51,6 +51,8 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
   const [longitude, setLongitude] = useState(range.longitude?.toString() || '')
   const [slug, setSlug] = useState(range.slug)
   const [newPassword, setNewPassword] = useState('')
+  const [portalEmail, setPortalEmail] = useState('')
+  const [portalPassword, setPortalPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -67,6 +69,52 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
       result += chars.charAt(Math.floor(Math.random() * chars.length))
     }
     setNewPassword(result)
+  }
+
+  const generateRandomPortalPassword = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let result = ''
+    for (let i = 0; i < 12; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    setPortalPassword(result)
+  }
+
+  const handleCreatePortalAccess = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccessMessage('')
+
+    try {
+      const response = await fetch(`/api/admin/ranges/${range.id}/activate-portal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: portalEmail.trim(),
+          password: portalPassword.trim(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccessMessage(`Portal access created successfully for ${portalEmail}`)
+        setPortalEmail('')
+        setPortalPassword('')
+        // Refresh the page to show the new user
+        window.location.reload()
+      } else {
+        setError(data.error || 'Failed to create portal access')
+      }
+    } catch (err) {
+      console.error('Error creating portal access:', err)
+      setError('Failed to create portal access')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleUpdateRange = async (e: React.FormEvent) => {
@@ -564,7 +612,57 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-gray-600">No portal user found</p>
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600 mb-4">No portal user found. Create portal access for the range owner:</p>
+
+                  <form onSubmit={handleCreatePortalAccess} className="space-y-4">
+                    <div>
+                      <label htmlFor="portalEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                        Portal Email
+                      </label>
+                      <input
+                        id="portalEmail"
+                        type="email"
+                        required
+                        value={portalEmail}
+                        onChange={(e) => setPortalEmail(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="owner@rangeexample.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="portalPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                        Portal Password
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          id="portalPassword"
+                          type="text"
+                          required
+                          value={portalPassword}
+                          onChange={(e) => setPortalPassword(e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={generateRandomPortalPassword}
+                          className="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                          Generate
+                        </button>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading || !portalEmail.trim() || !portalPassword.trim()}
+                      className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+                    >
+                      {loading ? 'Creating Portal Access...' : 'Create Portal Access'}
+                    </button>
+                  </form>
+                </div>
               )}
             </div>
 
