@@ -55,6 +55,18 @@ export const rangeSchema = z.object({
 })
 
 export const createRangeUserSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email('Please enter a valid email address').optional(),
+  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
+}).refine((data) => {
+  // If email is provided, password must also be provided
+  if (data.email && !data.password) {
+    return false
+  }
+  // If password is provided, email must also be provided
+  if (data.password && !data.email) {
+    return false
+  }
+  return true
+}, {
+  message: 'Both email and password must be provided together, or both left empty'
 })

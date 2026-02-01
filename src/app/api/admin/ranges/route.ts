@@ -28,10 +28,10 @@ export async function POST(request: Request) {
       slug: body.slug,
     })
 
-    // Validate user data
+    // Validate user data (optional)
     const userData = createRangeUserSchema.parse({
-      email: body.email,
-      password: body.password,
+      email: body.email || undefined,
+      password: body.password || undefined,
     })
 
     // Check if slug is unique
@@ -43,16 +43,18 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check if email is unique
-    const emailExists = await checkEmailExists(userData.email)
-    if (emailExists) {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 400 }
-      )
+    // Check if email is unique (only if email is provided)
+    if (userData.email) {
+      const emailExists = await checkEmailExists(userData.email)
+      if (emailExists) {
+        return NextResponse.json(
+          { error: 'Email already exists' },
+          { status: 400 }
+        )
+      }
     }
 
-    // Create range and user
+    // Create range and optionally user
     const result = await createRangeWithUser({
       name: rangeData.name,
       slug: rangeData.slug,
@@ -76,10 +78,10 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       range: result.range,
-      user: {
+      user: result.user ? {
         id: result.user.id,
         email: result.user.email,
-      },
+      } : null,
     })
   } catch (error) {
     console.error('Range creation error:', error)

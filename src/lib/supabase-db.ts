@@ -187,13 +187,13 @@ export interface CreateRangeData {
   postcode?: string | null
   latitude?: number | null
   longitude?: number | null
-  email: string
-  password: string
+  email?: string
+  password?: string
 }
 
 export interface CreateRangeResult {
   range: Range
-  user: {
+  user?: {
     id: string
     email: string
   }
@@ -290,37 +290,43 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
       return null
     }
 
-    // Hash password and create user
-    const passwordHash = await bcrypt.hash(data.password, 12)
-    const { data: userUuidResult } = await supabase.rpc('gen_random_uuid')
-    const userId = userUuidResult || crypto.randomUUID()
+    // Create user only if email and password are provided
+    let user = null
+    if (data.email && data.password) {
+      // Hash password and create user
+      const passwordHash = await bcrypt.hash(data.password, 12)
+      const { data: userUuidResult } = await supabase.rpc('gen_random_uuid')
+      const userId = userUuidResult || crypto.randomUUID()
 
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .insert({
-        id: userId,
-        email: data.email,
-        passwordHash,
-        role: 'RANGE',
-        rangeId: range.id,
-      })
-      .select('id, email')
-      .single()
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .insert({
+          id: userId,
+          email: data.email,
+          passwordHash,
+          role: 'RANGE',
+          rangeId: range.id,
+        })
+        .select('id, email')
+        .single()
 
-    if (userError) {
-      console.error('Error creating user:', userError)
-      console.error('User data being inserted:', {
-        id: userId,
-        email: data.email,
-        role: 'RANGE',
-        rangeId: range.id,
-      })
-      // Clean up range if user creation failed
-      await supabase
-        .from('ranges')
-        .delete()
-        .eq('id', range.id)
-      return null
+      if (userError) {
+        console.error('Error creating user:', userError)
+        console.error('User data being inserted:', {
+          id: userId,
+          email: data.email,
+          role: 'RANGE',
+          rangeId: range.id,
+        })
+        // Clean up range if user creation failed
+        await supabase
+          .from('ranges')
+          .delete()
+          .eq('id', range.id)
+        return null
+      }
+
+      user = userData
     }
 
     return {
@@ -328,9 +334,9 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
         ...range,
         lastUpdatedAt: range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null,
         createdAt: new Date(range.createdAt),
-        users: [user]
+        users: user ? [user] : []
       },
-      user
+      user: user || undefined
     }
   } catch (error) {
     console.error('Database query error in createRangeWithUser:', error)
@@ -918,5 +924,88 @@ export async function updateContactSubmissionStatus(
   } catch (error) {
     console.error('Database error updating contact submission:', error)
     return false
+  }
+}
+
+// Range activation interfaces and functions
+export interface ActivateRangeData {
+  rangeId: string
+  email: string
+  password: string
+}
+
+export async function activateRangeWithUser(data: ActivateRangeData): Promise<{ success: boolean; user?: { id: string; email: string } } | null> {
+  try {
+    // First check if range exists
+    const { data: range, error: rangeError } = await supabase
+      .from('ranges')
+      .select('id, name')
+      .eq('id', data.rangeId)
+      .single()
+
+    if (rangeError) {
+      console.error('Range not found:', rangeError)
+      return null
+    }
+
+    // Check if range already has a user
+    const { data: existingUser, error: userCheckError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('rangeId', data.rangeId)
+      .eq('role', 'RANGE')
+      .limit(1)
+
+    if (userCheckError) {
+      console.error('Error checking existing user:', userCheckError)
+      return null
+    }
+
+    if (existingUser && existingUser.length > 0) {
+      console.error('Range already has a user account')
+      return null
+    }
+
+    // Check if email is already in use
+    const emailExists = await checkEmailExists(data.email)
+    if (emailExists) {
+      console.error('Email already exists')
+      return null
+    }
+
+    // Create user for the range
+    const passwordHash = await bcrypt.hash(data.password, 12)
+    const { data: userUuidResult } = await supabase.rpc('gen_random_uuid')
+    const userId = userUuidResult || crypto.randomUUID()
+
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .insert({
+        id: userId,
+        email: data.email,
+        passwordHash,
+        role: 'RANGE',
+        rangeId: data.rangeId,
+      })
+      .select('id, email')
+      .single()
+
+    if (userError) {
+      console.error('Error creating user for range activation:', userError)
+      return null
+    }
+
+    console.log(`Range "${range.name}" activated with user "${data.email}"`)
+
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    }
+  } catch (error) {
+    console.error('Error activating range:', error)
+    return null
   }
 }

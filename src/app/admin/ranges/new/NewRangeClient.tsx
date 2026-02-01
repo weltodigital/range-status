@@ -62,8 +62,8 @@ export default function NewRangeClient() {
           latitude: latitude.trim() ? parseFloat(latitude.trim()) : null,
           longitude: longitude.trim() ? parseFloat(longitude.trim()) : null,
           slug: slug.trim(),
-          email: email.trim(),
-          password,
+          email: email.trim() || undefined,
+          password: password.trim() || undefined,
         }),
       })
 
@@ -238,15 +238,15 @@ export default function NewRangeClient() {
             {/* Portal User */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-gray-900">Portal Access</h2>
+              <p className="text-sm text-gray-600">Leave email and password empty to create a range without portal access. You can add portal access later when the range owner contacts you.</p>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Portal Email *
+                  Portal Email (Optional)
                 </label>
                 <input
                   id="email"
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -256,13 +256,12 @@ export default function NewRangeClient() {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Portal Password *
+                  Portal Password (Optional)
                 </label>
                 <div className="flex gap-2">
                   <input
                     id="password"
                     type="text"
-                    required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
