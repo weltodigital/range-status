@@ -12,6 +12,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Logo from '@/components/Logo'
 import RangePageClient from './RangePageClient'
+import LiveRangeStatus from '@/components/LiveRangeStatus'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -94,34 +95,13 @@ export default async function RangePage({ params }: RangePageProps) {
         {/* Status Card */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-6 text-center">
           {canShowStatus ? (
-            <>
-              <div className="mb-6">
-                <div className={`inline-flex items-center px-6 py-3 rounded-full text-xl font-bold ${getStatusColor(range.status)}`}>
-                  {range.status}
-                </div>
-              </div>
-
-              {range.note && (
-                <p className="text-lg text-gray-700 mb-4 italic">
-                  "{range.note}"
-                </p>
-              )}
-
-              <div className="text-sm text-gray-600">
-                {lastUpdated ? (
-                  <>
-                    Last updated {formatTimeAgo(lastUpdated)}
-                    {isDataStale && (
-                      <div className="text-amber-600 font-medium mt-2">
-                        ⚠️ May be out of date
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-gray-400">No recent updates</span>
-                )}
-              </div>
-            </>
+            <LiveRangeStatus
+              slug={slug}
+              initialStatus={range.status}
+              initialNote={range.note}
+              initialLastUpdated={lastUpdated}
+              initialIsStale={isDataStale}
+            />
           ) : (
             <div className="py-8">
               <div className="mb-6">
