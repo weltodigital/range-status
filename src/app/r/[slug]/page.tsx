@@ -78,9 +78,6 @@ export default async function RangePage({ params }: RangePageProps) {
       {/* Range Header */}
       <div className="bg-gradient-to-r from-secondary to-secondary/90 py-8 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center mb-6">
-            <Logo size="md" variant="dark" />
-          </div>
           <div className="text-center text-white">
             <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-white">
               {range.name}
