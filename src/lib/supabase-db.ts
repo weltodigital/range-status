@@ -172,6 +172,8 @@ export async function getRangeById(id: string): Promise<Range | null> {
       ...range,
       lastUpdatedAt: range.lastUpdatedAt ? new Date(range.lastUpdatedAt) : null,
       createdAt: new Date(range.createdAt),
+      stripeCustomerId: (range as any).stripecustomerid || null,
+      stripeSubscriptionId: (range as any).stripesubscriptionid || null,
       users: users || []
     }
   } catch (error) {
