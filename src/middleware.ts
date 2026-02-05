@@ -51,7 +51,7 @@ export function middleware(request: NextRequest) {
       if (session.role === 'ADMIN') {
         return NextResponse.redirect(new URL('/admin', request.url))
       } else {
-        return NextResponse.redirect(new URL('/', request.url))
+        return NextResponse.redirect(new URL('/portal', request.url))
       }
     }
 
