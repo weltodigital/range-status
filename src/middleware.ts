@@ -33,6 +33,15 @@ export function middleware(request: NextRequest) {
       }
     }
 
+    // Redirect to dashboard if already logged in and visiting login
+    if (pathname === '/login' && session) {
+      if (session.role === 'ADMIN') {
+        return NextResponse.redirect(new URL('/admin/ranges', request.url))
+      } else {
+        return NextResponse.redirect(new URL('/portal', request.url))
+      }
+    }
+
     // Keep admin and portal routes protected for direct access
     if (pathname.startsWith('/admin')) {
       if (!session || session.role !== 'ADMIN') {
@@ -46,18 +55,18 @@ export function middleware(request: NextRequest) {
       }
     }
 
-    // Redirect to dashboard if already logged in and visiting login
-    if (pathname === '/login' && session) {
-      if (session.role === 'ADMIN') {
-        return NextResponse.redirect(new URL('/admin', request.url))
-      } else {
-        return NextResponse.redirect(new URL('/portal', request.url))
-      }
-    }
-
     // Redirect root app subdomain to login if not authenticated
     if (pathname === '/' && !session) {
       return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // Redirect authenticated users from root to their dashboard
+    if (pathname === '/' && session) {
+      if (session.role === 'ADMIN') {
+        return NextResponse.redirect(new URL('/admin/ranges', request.url))
+      } else {
+        return NextResponse.redirect(new URL('/portal', request.url))
+      }
     }
   }
 
