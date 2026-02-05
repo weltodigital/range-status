@@ -129,7 +129,7 @@ export function getUpgradeMessage(info: SubscriptionInfo): string {
     return 'Contact us to set up your full account and subscription to start updating your range status.'
   }
   if (info.isTrial && info.isExpired) {
-    return 'Contact us to set up your subscription and start updating your range status.'
+    return 'Contact us to start updating your range status.'
   }
   if (info.isPastDue) {
     return 'Your subscription is past due. Please update your payment to continue service.'
