@@ -380,6 +380,7 @@ export async function checkSlugExistsExcluding(slug: string, excludeId: string):
 
 export async function updateRangeStatus(rangeId: string, status: string, note?: string | null): Promise<Range | null> {
   try {
+    console.log('updateRangeStatus called:', { rangeId, status, note })
     const now = new Date().toISOString()
 
     // Update range status
@@ -400,16 +401,20 @@ export async function updateRangeStatus(rangeId: string, status: string, note?: 
     }
 
     // Create status event
-    const { error: eventError } = await supabase
+    console.log('Creating status event:', { rangeId, status, createdAt: now })
+    const { data: eventData, error: eventError } = await supabase
       .from('status_events')
       .insert({
         rangeId,
         status,
         createdAt: now,
       })
+      .select()
 
     if (eventError) {
       console.error('Error creating status event:', eventError)
+    } else {
+      console.log('Status event created successfully:', eventData)
     }
 
     return {
