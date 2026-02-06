@@ -182,13 +182,12 @@ export default function LiveRangeStatus({
                 minute: '2-digit'
               })
 
-              // Extract background color from getStatusColor utility
-              const statusColorClass = getStatusColor(event.status)
+              // Map status directly to background colors
               let bgColor = 'bg-gray-500' // fallback
 
-              if (statusColorClass.includes('bg-green')) bgColor = 'bg-green-500'
-              else if (statusColorClass.includes('bg-orange') || statusColorClass.includes('bg-yellow')) bgColor = 'bg-orange-500'
-              else if (statusColorClass.includes('bg-red')) bgColor = 'bg-red-500'
+              if (event.status === 'QUIET') bgColor = 'bg-green-500'
+              else if (event.status === 'MODERATE') bgColor = 'bg-orange-500'
+              else if (event.status === 'BUSY') bgColor = 'bg-red-500'
 
               return (
                 <div key={event.id} className="flex flex-col items-center text-center" title={`${event.status} at ${timeString}`}>
