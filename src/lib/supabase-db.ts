@@ -403,9 +403,9 @@ export async function updateRangeStatus(rangeId: string, status: string, note?: 
     const { error: eventError } = await supabase
       .from('status_events')
       .insert({
-        rangeId,
+        range_id: rangeId,
         status,
-        createdAt: now,
+        created_at: now,
       })
 
     if (eventError) {
@@ -534,11 +534,11 @@ export async function getStatusEvents(rangeId: string, from?: Date): Promise<any
     let query = supabase
       .from('status_events')
       .select('*')
-      .eq('rangeId', rangeId)
-      .order('createdAt', { ascending: true })
+      .eq('range_id', rangeId)
+      .order('created_at', { ascending: true })
 
     if (from) {
-      query = query.gte('createdAt', from.toISOString())
+      query = query.gte('created_at', from.toISOString())
     }
 
     const { data: statusEvents, error } = await query
