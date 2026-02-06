@@ -24,19 +24,38 @@ export async function GET(
     const today = new Date()
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
-    // Fetch today's status events
-    const allEvents = await getStatusEvents(range.id, startOfDay)
+    // Debug: log the range ID and date filter
+    console.log('History API Debug:', {
+      rangeId: range.id,
+      slug: slug,
+      startOfDay: startOfDay.toISOString(),
+      today: today.toISOString()
+    })
 
-    // Filter to only today's events and sort by newest first
-    const todayEvents = allEvents
+    // Fetch all status events for this range (without date filter first to debug)
+    const allEvents = await getStatusEvents(range.id)
+    console.log('All events for range:', allEvents.length, allEvents.slice(0, 3))
+
+    // Fetch today's status events
+    const todayEvents = await getStatusEvents(range.id, startOfDay)
+    console.log('Today events with filter:', todayEvents.length, todayEvents.slice(0, 3))
+
+    // Additional filter and sort by newest first
+    const filteredEvents = todayEvents
       .filter(event => {
         const eventDate = new Date(event.createdAt)
-        return eventDate >= startOfDay
+        const isToday = eventDate >= startOfDay
+        console.log('Event date check:', {
+          eventDate: eventDate.toISOString(),
+          startOfDay: startOfDay.toISOString(),
+          isToday
+        })
+        return isToday
       })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     const response = NextResponse.json({
-      events: todayEvents.map(event => ({
+      events: filteredEvents.map(event => ({
         id: event.id,
         status: event.status,
         createdAt: event.createdAt
