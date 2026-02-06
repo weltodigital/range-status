@@ -36,16 +36,17 @@ export async function GET(
     const allEvents = await getStatusEvents(range.id)
     console.log('All events for range:', allEvents.length, allEvents.slice(0, 3))
 
-    // Fetch today's status events
-    const todayEvents = await getStatusEvents(range.id, startOfDay)
-    console.log('Today events with filter:', todayEvents.length, todayEvents.slice(0, 3))
+    // Fetch all events first (no date filter to debug)
+    const todayEvents = await getStatusEvents(range.id)
+    console.log('All events (no date filter):', todayEvents.length, todayEvents.slice(0, 3))
 
-    // Additional filter and sort by newest first
+    // Filter to today only and sort by newest first
     const filteredEvents = todayEvents
       .filter(event => {
         const eventDate = new Date(event.createdAt)
         const isToday = eventDate >= startOfDay
         console.log('Event date check:', {
+          eventCreated: event.createdAt,
           eventDate: eventDate.toISOString(),
           startOfDay: startOfDay.toISOString(),
           isToday
