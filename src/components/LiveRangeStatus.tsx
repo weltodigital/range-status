@@ -102,11 +102,11 @@ export default function LiveRangeStatus({
   useEffect(() => {
     if (!isPolling) return
 
-    // Poll every 30 seconds
+    // Poll every 10 seconds for more responsive updates
     const interval = setInterval(() => {
       fetchStatus()
       fetchStatusHistory()
-    }, 30000)
+    }, 10000)
 
     return () => clearInterval(interval)
   }, [fetchStatus, fetchStatusHistory, isPolling])
