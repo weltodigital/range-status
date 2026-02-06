@@ -177,7 +177,7 @@ export default function PricingPage() {
           </p>
           <Link
             href="/contact"
-            className="bg-white text-secondary px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium inline-block"
+            className="bg-primary text-white px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium inline-block"
           >
             Contact Us Today
           </Link>
