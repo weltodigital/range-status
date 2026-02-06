@@ -174,7 +174,7 @@ export default function LiveRangeStatus({
       {statusHistory.length > 0 && (
         <div className="mt-6 border-t pt-4">
           <h3 className="text-lg font-medium text-gray-900 mb-3">Today's Status Updates</h3>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {statusHistory.map((event) => {
               const eventTime = new Date(event.createdAt)
               const timeString = eventTime.toLocaleTimeString([], {
@@ -183,14 +183,12 @@ export default function LiveRangeStatus({
               })
 
               return (
-                <div key={event.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(event.status)}`}>
-                      {event.status}
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      at {timeString}
-                    </span>
+                <div key={event.id} className="flex flex-col items-center text-center">
+                  <span className="text-xs text-gray-600 mb-1">
+                    {timeString}
+                  </span>
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(event.status)}`}>
+                    {event.status}
                   </div>
                 </div>
               )
