@@ -174,7 +174,7 @@ export default function LiveRangeStatus({
       {statusHistory.length > 0 && (
         <div className="mt-6 border-t pt-4">
           <h3 className="text-lg font-medium text-gray-900 mb-3">Today's Status Updates</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="flex flex-wrap gap-4">
             {statusHistory.map((event) => {
               const eventTime = new Date(event.createdAt)
               const timeString = eventTime.toLocaleTimeString([], {
@@ -182,14 +182,20 @@ export default function LiveRangeStatus({
                 minute: '2-digit'
               })
 
+              // Extract background color from getStatusColor utility
+              const statusColorClass = getStatusColor(event.status)
+              let bgColor = 'bg-gray-500' // fallback
+
+              if (statusColorClass.includes('bg-green')) bgColor = 'bg-green-500'
+              else if (statusColorClass.includes('bg-orange') || statusColorClass.includes('bg-yellow')) bgColor = 'bg-orange-500'
+              else if (statusColorClass.includes('bg-red')) bgColor = 'bg-red-500'
+
               return (
-                <div key={event.id} className="flex flex-col items-center text-center">
+                <div key={event.id} className="flex flex-col items-center text-center" title={`${event.status} at ${timeString}`}>
                   <span className="text-xs text-gray-600 mb-1">
                     {timeString}
                   </span>
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(event.status)}`}>
-                    {event.status}
-                  </div>
+                  <div className={`w-4 h-4 rounded-full ${bgColor}`}></div>
                 </div>
               )
             })}
