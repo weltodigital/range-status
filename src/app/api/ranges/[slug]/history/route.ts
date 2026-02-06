@@ -43,27 +43,23 @@ export async function GET(
     // Filter to today only and sort by newest first
     const filteredEvents = todayEvents
       .filter(event => {
-        const eventDate = new Date(event.created_at || event.createdAt)
+        const eventDate = new Date(event.createdAt)
         const isToday = eventDate >= startOfDay
         console.log('Event date check:', {
-          eventCreated: event.created_at || event.createdAt,
+          eventCreated: event.createdAt,
           eventDate: eventDate.toISOString(),
           startOfDay: startOfDay.toISOString(),
           isToday
         })
         return isToday
       })
-      .sort((a, b) => {
-        const dateA = new Date(a.created_at || a.createdAt).getTime()
-        const dateB = new Date(b.created_at || b.createdAt).getTime()
-        return dateB - dateA
-      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     const response = NextResponse.json({
       events: filteredEvents.map(event => ({
         id: event.id,
         status: event.status,
-        createdAt: event.created_at || event.createdAt
+        createdAt: event.createdAt
       }))
     })
 
