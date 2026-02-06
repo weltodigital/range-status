@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getRangeBySlug } from '@/lib/supabase-db'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getRangeBySlug, getStatusEvents } from '@/lib/supabase-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -23,30 +20,26 @@ export async function GET(
       )
     }
 
-    // Get today's date range (start and end of today)
+    // Get today's date range (start of today)
     const today = new Date()
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
 
     // Fetch today's status events
-    const statusEvents = await prisma.statusEvent.findMany({
-      where: {
-        rangeId: range.id,
-        createdAt: {
-          gte: startOfDay,
-          lt: endOfDay
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
+    const allEvents = await getStatusEvents(range.id, startOfDay)
+
+    // Filter to only today's events and sort by newest first
+    const todayEvents = allEvents
+      .filter(event => {
+        const eventDate = new Date(event.createdAt)
+        return eventDate >= startOfDay
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     const response = NextResponse.json({
-      events: statusEvents.map(event => ({
+      events: todayEvents.map(event => ({
         id: event.id,
         status: event.status,
-        createdAt: event.createdAt.toISOString()
+        createdAt: event.createdAt
       }))
     })
 
