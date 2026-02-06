@@ -98,6 +98,16 @@ export default function RangesClient() {
 
   return (
     <div className="space-y-6">
+      {/* Map */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Range Locations</h2>
+        <MapWrapper
+          ranges={filteredRanges}
+          showAllRanges={true}
+          height="800px"
+        />
+      </div>
+
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -147,16 +157,6 @@ export default function RangesClient() {
             </select>
           </div>
         </div>
-      </div>
-
-      {/* Map */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Range Locations</h2>
-        <MapWrapper
-          ranges={filteredRanges}
-          showAllRanges={true}
-          height="600px"
-        />
       </div>
 
       {/* Results */}
