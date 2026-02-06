@@ -405,6 +405,7 @@ export async function updateRangeStatus(rangeId: string, status: string, note?: 
     const { data: eventData, error: eventError } = await supabase
       .from('status_events')
       .insert({
+        id: crypto.randomUUID(),
         rangeId,
         status,
         createdAt: now,
