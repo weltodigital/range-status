@@ -39,12 +39,77 @@ interface AdminRangesClientProps {
 export default function AdminRangesClient({ ranges: initialRanges }: AdminRangesClientProps) {
   const [ranges, setRanges] = useState(initialRanges)
   const [showStaleOnly, setShowStaleOnly] = useState(false)
+  const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({})
   const router = useRouter()
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
     router.push('/login')
     router.refresh()
+  }
+
+  const handleToggleActive = async (rangeId: string) => {
+    if (loadingActions[rangeId]) return
+
+    setLoadingActions(prev => ({ ...prev, [rangeId]: true }))
+
+    try {
+      const response = await fetch(`/api/admin/ranges/${rangeId}/toggle-active`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle range status')
+      }
+
+      const data = await response.json()
+
+      // Update the local state
+      setRanges(prev =>
+        prev.map(range =>
+          range.id === rangeId
+            ? { ...range, isActive: data.range.isActive }
+            : range
+        )
+      )
+    } catch (error) {
+      console.error('Error toggling range status:', error)
+      alert('Failed to toggle range status. Please try again.')
+    } finally {
+      setLoadingActions(prev => ({ ...prev, [rangeId]: false }))
+    }
+  }
+
+  const handleDeleteRange = async (rangeId: string, rangeName: string) => {
+    if (loadingActions[rangeId]) return
+
+    const confirmed = confirm(
+      `Are you sure you want to permanently delete "${rangeName}"?\n\nThis will delete:\n- The range and all its data\n- All associated users\n- All status history\n\nThis action cannot be undone.`
+    )
+
+    if (!confirmed) return
+
+    setLoadingActions(prev => ({ ...prev, [rangeId]: true }))
+
+    try {
+      const response = await fetch(`/api/admin/ranges/${rangeId}/delete`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete range')
+      }
+
+      // Remove the range from local state
+      setRanges(prev => prev.filter(range => range.id !== rangeId))
+
+      alert('Range deleted successfully')
+    } catch (error) {
+      console.error('Error deleting range:', error)
+      alert('Failed to delete range. Please try again.')
+    } finally {
+      setLoadingActions(prev => ({ ...prev, [rangeId]: false }))
+    }
   }
 
   const filteredRanges = ranges.filter(range => {
@@ -201,20 +266,49 @@ export default function AdminRangesClient({ ranges: initialRanges }: AdminRanges
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {portalUser ? portalUser.email : 'No user'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                          <Link
-                            href={`/r/${range.slug}`}
-                            className="text-blue-600 hover:text-blue-900"
-                            target="_blank"
-                          >
-                            View
-                          </Link>
-                          <Link
-                            href={`/admin/ranges/${range.id}`}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            Edit
-                          </Link>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex gap-2">
+                              <Link
+                                href={`/r/${range.slug}`}
+                                className="text-blue-600 hover:text-blue-900"
+                                target="_blank"
+                              >
+                                View
+                              </Link>
+                              <Link
+                                href={`/admin/ranges/${range.id}`}
+                                className="text-indigo-600 hover:text-indigo-900"
+                              >
+                                Edit
+                              </Link>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleToggleActive(range.id)}
+                                disabled={loadingActions[range.id]}
+                                className={`text-xs px-2 py-1 rounded transition-colors ${
+                                  range.isActive
+                                    ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                } disabled:opacity-50`}
+                              >
+                                {loadingActions[range.id]
+                                  ? '...'
+                                  : range.isActive
+                                  ? 'Deactivate'
+                                  : 'Activate'
+                                }
+                              </button>
+                              <button
+                                onClick={() => handleDeleteRange(range.id, range.name)}
+                                disabled={loadingActions[range.id]}
+                                className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors disabled:opacity-50"
+                              >
+                                {loadingActions[range.id] ? '...' : 'Delete'}
+                              </button>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     )

@@ -1072,3 +1072,48 @@ export async function adminResetUserPassword(rangeId: string, newPassword: strin
     return false
   }
 }
+
+export async function deleteRange(id: string): Promise<boolean> {
+  try {
+    // Delete in order: status_events, users, then range (due to foreign key constraints)
+
+    // Delete status events first
+    const { error: eventsError } = await supabase
+      .from('status_events')
+      .delete()
+      .eq('rangeId', id)
+
+    if (eventsError) {
+      console.error('Error deleting status events:', eventsError)
+      return false
+    }
+
+    // Delete users associated with the range
+    const { error: usersError } = await supabase
+      .from('users')
+      .delete()
+      .eq('rangeId', id)
+
+    if (usersError) {
+      console.error('Error deleting range users:', usersError)
+      return false
+    }
+
+    // Finally delete the range
+    const { error: rangeError } = await supabase
+      .from('ranges')
+      .delete()
+      .eq('id', id)
+
+    if (rangeError) {
+      console.error('Error deleting range:', rangeError)
+      return false
+    }
+
+    console.log(`Range ${id} deleted successfully`)
+    return true
+  } catch (error) {
+    console.error('Error in deleteRange:', error)
+    return false
+  }
+}
