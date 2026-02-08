@@ -46,7 +46,8 @@ export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo 
   const isExpired = subscriptionExpiry ? now > subscriptionExpiry : (subscriptionStatus === 'expired')
   const isCanceled = subscriptionStatus === 'canceled'
   const isPastDue = subscriptionStatus === 'past_due'
-  const isActive = subscriptionStatus === 'active' && !isExpired
+  // For trials, active means not expired. For paid subscriptions, check both status and expiry.
+  const isActive = isTrial ? !isExpired : (subscriptionStatus === 'active' && !isExpired)
   const isPaid = subscriptionType !== 'trial' && subscriptionType !== null && isActive
 
   // Determine access level
