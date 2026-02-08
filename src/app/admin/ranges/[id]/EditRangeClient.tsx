@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatTimeAgo, isStale, getStatusColorLight } from '@/lib/utils'
-import { getSubscriptionInfo, getSubscriptionStatusBadge } from '@/lib/subscription-utils'
+import { getSubscriptionInfo, getSubscriptionStatusBadge, hasUsedFreeTrial } from '@/lib/subscription-utils'
 
 interface RangeWithUsers {
   id: string
@@ -577,19 +577,34 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                   <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <h4 className="font-semibold text-yellow-800 mb-2">Range Needs Account Setup</h4>
                     <p className="text-sm text-yellow-700 mb-3">
-                      This range is listed but needs to contact us for full account setup. Once they contact us and are ready to subscribe, you can activate their subscription access.
+                      This range is listed but needs to contact us for full account setup.
+                      {hasUsedFreeTrial(range)
+                        ? ' Note: This range has already used their free trial, so they will need to set up payment immediately.'
+                        : ' Once they contact us and are ready to subscribe, you can activate their subscription access with a 7-day free trial.'
+                      }
                     </p>
                     <button
                       onClick={async () => {
-                        if (confirm('Activate subscription access for this range? They will be able to manage subscriptions and update status.')) {
+                        const hasUsedTrial = hasUsedFreeTrial(range)
+                        const confirmMessage = hasUsedTrial
+                          ? 'This range has already used their free trial. Activating will require immediate payment setup. Continue?'
+                          : 'Activate subscription access for this range? They will get a 7-day free trial.'
+
+                        if (confirm(confirmMessage)) {
                           try {
                             const response = await fetch(`/api/admin/ranges/${range.id}/activate-subscription`, {
                               method: 'POST'
                             })
+
                             if (response.ok) {
                               window.location.reload()
                             } else {
-                              alert('Failed to activate subscription access')
+                              const errorData = await response.json()
+                              if (errorData.requiresPayment) {
+                                alert('This range has already used their free trial. A paid subscription must be set up before activation.')
+                              } else {
+                                alert('Failed to activate subscription access: ' + (errorData.message || 'Unknown error'))
+                              }
                             }
                           } catch (error) {
                             alert('Error activating subscription access')
@@ -598,7 +613,7 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                       }}
                       className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
                     >
-                      Activate Subscription Access
+                      {hasUsedFreeTrial(range) ? 'Activate (Paid Required)' : 'Activate with Free Trial'}
                     </button>
                   </div>
                 )}

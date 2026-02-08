@@ -42,6 +42,7 @@ export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo 
 
   // Determine status flags - handle null subscription types
   const isTrial = subscriptionType === 'trial'
+  // Prioritize actual expiry date over status field - only consider expired if date has actually passed
   const isExpired = subscriptionExpiry ? now > subscriptionExpiry : (subscriptionStatus === 'expired')
   const isCanceled = subscriptionStatus === 'canceled'
   const isPastDue = subscriptionStatus === 'past_due'
@@ -61,9 +62,6 @@ export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo 
   } else if (isPastDue && daysPastDue) {
     statusText = `Past Due (${daysPastDue} days overdue)`
     statusColor = 'orange'
-  } else if (isExpired && daysRemaining !== null && daysRemaining < 0) {
-    statusText = `Expired (${Math.abs(daysRemaining)} days ago)`
-    statusColor = 'red'
   } else if (isTrial && daysRemaining !== null) {
     if (daysRemaining > 0) {
       statusText = `Trial (${daysRemaining} days remaining)`
@@ -72,6 +70,9 @@ export function getSubscriptionInfo(range: SubscriptionRange): SubscriptionInfo 
       statusText = 'Trial Expired'
       statusColor = 'red'
     }
+  } else if (isExpired && daysRemaining !== null && daysRemaining < 0) {
+    statusText = `Expired (${Math.abs(daysRemaining)} days ago)`
+    statusColor = 'red'
   } else if (isPaid) {
     const typeText = subscriptionType === 'monthly' ? 'Monthly' : 'Yearly'
     if (daysSinceLastPayment !== null && daysSinceLastPayment <= 31) {
@@ -129,7 +130,7 @@ export function getUpgradeMessage(info: SubscriptionInfo): string {
     return 'Contact us to set up your full account and subscription to start updating your range status.'
   }
   if (info.isTrial && info.isExpired) {
-    return 'Contact us to start updating your range status.'
+    return 'Your free trial has expired. Contact us to continue with a paid subscription.'
   }
   if (info.isPastDue) {
     return 'Your subscription is past due. Please update your payment to continue service.'
@@ -138,7 +139,7 @@ export function getUpgradeMessage(info: SubscriptionInfo): string {
     return 'Your subscription has been canceled. Reactivate to continue updating your status.'
   }
   if (info.isExpired) {
-    return 'Your subscription has expired. Renew now to continue using all features.'
+    return 'Your subscription has expired. Contact us to renew and continue using all features.'
   }
   return 'Subscribe to access all features including status updates.'
 }
@@ -149,4 +150,16 @@ export function getContactUsMessage(info: SubscriptionInfo): string {
     return 'This range is listed in our directory but needs to contact us to activate full status updates and subscription features.'
   }
   return getUpgradeMessage(info)
+}
+
+export function hasUsedFreeTrial(range: SubscriptionRange): boolean {
+  // Check if the range has had a trial before by looking at subscription history
+  const now = new Date()
+  return !!(range.subscriptionExpiry &&
+    new Date(range.subscriptionExpiry) < now &&
+    (range.subscriptionType === 'trial' || !range.subscriptionType))
+}
+
+export function canReceiveFreeTrial(range: SubscriptionRange): boolean {
+  return !hasUsedFreeTrial(range)
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { updateRangeSubscription } from '@/lib/supabase-db'
+import { updateRangeSubscription, getRangeById } from '@/lib/supabase-db'
+import { hasUsedFreeTrial } from '@/lib/subscription-utils'
 
 export async function POST(
   request: Request,
@@ -17,6 +18,24 @@ export async function POST(
     }
 
     const { id } = await params
+
+    // Get current range data to check trial history
+    const range = await getRangeById(id)
+    if (!range) {
+      return NextResponse.json(
+        { error: 'Range not found' },
+        { status: 404 }
+      )
+    }
+
+    // Check if the range has had a trial before
+    if (hasUsedFreeTrial(range)) {
+      return NextResponse.json({
+        success: false,
+        message: 'This range has already used their free trial. A paid subscription is required.',
+        requiresPayment: true
+      }, { status: 400 })
+    }
 
     // Activate subscription access - give them a trial to start with
     const trialExpiry = new Date()
