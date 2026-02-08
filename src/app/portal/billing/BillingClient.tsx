@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Range } from '@/lib/supabase-db'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import { getSubscriptionInfo } from '@/lib/subscription-utils'
 
 interface BillingClientProps {
   range: Range
@@ -27,17 +28,10 @@ export default function BillingClient({ range }: BillingClientProps) {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly')
   const [loading, setLoading] = useState(false)
 
-  const currentSubscription = {
-    type: range.subscriptionType || 'trial',
-    status: range.subscriptionStatus || 'active',
-    expiry: range.subscriptionExpiry ? new Date(range.subscriptionExpiry) : null
-  }
-
-  const isOnTrial = currentSubscription.type === 'trial'
-  const isExpired = currentSubscription.status === 'expired'
-  const daysLeft = currentSubscription.expiry
-    ? Math.max(0, Math.ceil((currentSubscription.expiry.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-    : 0
+  const subscriptionInfo = getSubscriptionInfo(range)
+  const isOnTrial = subscriptionInfo.isTrial
+  const isExpired = subscriptionInfo.isExpired
+  const daysLeft = subscriptionInfo.daysRemaining || 0
 
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
     setLoading(true)
@@ -119,38 +113,37 @@ export default function BillingClient({ range }: BillingClientProps) {
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-gray-700">Status:</span>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    currentSubscription.status === 'active'
+                    subscriptionInfo.isActive
                       ? 'bg-green-100 text-green-800'
-                      : currentSubscription.status === 'expired'
+                      : subscriptionInfo.isExpired
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800'
                   }`}>
-                    {currentSubscription.status === 'active' ? 'Active' :
-                     currentSubscription.status === 'expired' ? 'Expired' : 'Cancelled'}
+                    {subscriptionInfo.statusText}
                   </span>
                 </div>
 
                 <div className="mt-2">
                   <span className="text-sm font-medium text-gray-700">Plan:</span>
                   <span className="text-sm text-gray-900 ml-2 capitalize">
-                    {currentSubscription.type}
-                    {currentSubscription.type === 'trial' && ` (${daysLeft} days left)`}
+                    {subscriptionInfo.isTrial ? 'Trial' : (range.subscriptionType === 'monthly' ? 'Monthly' : 'Yearly')}
+                    {subscriptionInfo.isTrial && ` (${daysLeft} day${daysLeft === 1 ? '' : 's'} left)`}
                   </span>
                 </div>
 
-                {currentSubscription.expiry && (
+                {range.subscriptionExpiry && (
                   <div className="mt-2">
                     <span className="text-sm font-medium text-gray-700">
-                      {currentSubscription.type === 'trial' ? 'Trial expires:' : 'Next billing:'}
+                      {subscriptionInfo.isTrial ? 'Trial expires:' : 'Next billing:'}
                     </span>
                     <span className="text-sm text-gray-900 ml-2">
-                      {currentSubscription.expiry.toLocaleDateString()}
+                      {new Date(range.subscriptionExpiry).toLocaleDateString()}
                     </span>
                   </div>
                 )}
               </div>
 
-              {!isOnTrial && currentSubscription.status === 'active' && (
+              {!isOnTrial && subscriptionInfo.isActive && (
                 <button
                   onClick={handleManageBilling}
                   disabled={loading}
