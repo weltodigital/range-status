@@ -125,6 +125,14 @@ export function shouldShowStatusUpdate(info: SubscriptionInfo): boolean {
 }
 
 export function getUpgradeMessage(info: SubscriptionInfo): string {
+  // Active trials and paid subscriptions don't need upgrade messages
+  if (info.canAccessFullFeatures) {
+    if (info.isTrial && info.daysRemaining && info.daysRemaining <= 3) {
+      return `Your trial ends in ${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'}. Contact us to set up your subscription.`
+    }
+    return '' // No upgrade message needed for active subscriptions
+  }
+
   // Check if this is a new range without any subscription (contact us state)
   if (info.isExpired && !info.isTrial && !info.isPaid && !info.isCanceled) {
     return 'Contact us to set up your full account and subscription to start updating your range status.'
