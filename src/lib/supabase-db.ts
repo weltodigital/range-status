@@ -1075,6 +1075,38 @@ export async function adminResetUserPassword(rangeId: string, newPassword: strin
 
 export async function deleteRange(id: string): Promise<boolean> {
   try {
+    // First, get the range data to access Stripe subscription info
+    const { data: range, error: getRangeError } = await supabase
+      .from('ranges')
+      .select('stripeSubscriptionId, name')
+      .eq('id', id)
+      .single()
+
+    if (getRangeError) {
+      console.error('Error fetching range for deletion:', getRangeError)
+      return false
+    }
+
+    // Cancel Stripe subscription if it exists
+    if (range?.stripeSubscriptionId) {
+      console.log(`Canceling Stripe subscription ${range.stripeSubscriptionId} for range ${range.name}`)
+
+      try {
+        const { cancelSubscription } = await import('./stripe')
+        const result = await cancelSubscription(range.stripeSubscriptionId)
+
+        if (result.success) {
+          console.log(`Stripe subscription ${range.stripeSubscriptionId} canceled successfully`)
+        } else {
+          console.warn(`Failed to cancel Stripe subscription: ${result.error}`)
+          // Continue with deletion even if Stripe cancellation fails
+        }
+      } catch (stripeError) {
+        console.warn('Error canceling Stripe subscription:', stripeError)
+        // Continue with deletion even if Stripe cancellation fails
+      }
+    }
+
     // Delete in order: status_events, users, then range (due to foreign key constraints)
 
     // Delete status events first

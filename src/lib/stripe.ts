@@ -82,6 +82,31 @@ export async function createBillingPortalSession(customerId: string) {
   return session
 }
 
+// Helper function to cancel a subscription
+export async function cancelSubscription(subscriptionId: string) {
+  const stripeClient = getStripe()
+
+  try {
+    const subscription = await stripeClient.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: false // Cancel immediately
+    })
+
+    // Actually cancel the subscription
+    const canceledSubscription = await stripeClient.subscriptions.cancel(subscriptionId)
+
+    return {
+      success: true,
+      subscription: canceledSubscription
+    }
+  } catch (error) {
+    console.error('Error canceling Stripe subscription:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
+  }
+}
+
 // Helper function to verify webhook signature
 export function verifyWebhookSignature(
   body: string,
