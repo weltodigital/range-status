@@ -172,3 +172,8 @@ export function hasUsedFreeTrial(range: SubscriptionRange): boolean {
 export function canReceiveFreeTrial(range: SubscriptionRange): boolean {
   return !hasUsedFreeTrial(range)
 }
+
+export function canAccessBilling(info: SubscriptionInfo): boolean {
+  // Users can access billing if they have an active subscription OR past due (need to retry payment)
+  return info.canAccessFullFeatures || info.isPastDue
+}

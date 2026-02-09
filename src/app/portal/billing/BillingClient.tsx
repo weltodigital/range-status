@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Range } from '@/lib/supabase-db'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
-import { getSubscriptionInfo } from '@/lib/subscription-utils'
+import { getSubscriptionInfo, canAccessBilling } from '@/lib/subscription-utils'
 
 interface BillingClientProps {
   range: Range
@@ -32,6 +32,7 @@ export default function BillingClient({ range }: BillingClientProps) {
   const isOnTrial = subscriptionInfo.isTrial
   const isExpired = subscriptionInfo.isExpired
   const daysLeft = subscriptionInfo.daysRemaining || 0
+  const canManageBilling = canAccessBilling(subscriptionInfo)
 
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
     setLoading(true)
@@ -143,7 +144,7 @@ export default function BillingClient({ range }: BillingClientProps) {
                 )}
               </div>
 
-              {!isOnTrial && subscriptionInfo.isActive && (
+              {canManageBilling && (
                 <button
                   onClick={handleManageBilling}
                   disabled={loading}

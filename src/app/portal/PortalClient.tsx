@@ -6,7 +6,7 @@ import { formatTimeAgo, isStale } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Logo from '@/components/Logo'
 import Footer from '@/components/Footer'
-import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getSubscriptionStatusBadge, getContactUsMessage } from '@/lib/subscription-utils'
+import { getSubscriptionInfo, shouldShowStatusUpdate, getUpgradeMessage, getSubscriptionStatusBadge, getContactUsMessage, canAccessBilling } from '@/lib/subscription-utils'
 
 interface RangeType {
   id: string
@@ -41,6 +41,7 @@ export default function PortalClient({ range: initialRange }: PortalClientProps)
 
   const subscriptionInfo = getSubscriptionInfo(range)
   const canUpdateStatus = shouldShowStatusUpdate(subscriptionInfo)
+  const canManageBilling = canAccessBilling(subscriptionInfo)
   const [saveStatus, setSaveStatus] = useState('')
   const router = useRouter()
 
