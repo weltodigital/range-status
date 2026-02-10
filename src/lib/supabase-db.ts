@@ -289,7 +289,7 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
       .single()
 
     if (rangeError) {
-      console.error('Error creating range:', rangeError)
+      console.error('Error creating range:', rangeError?.message || rangeError)
       console.error('Range data being inserted:', JSON.stringify(rangeData, null, 2))
       return null
     }
@@ -343,7 +343,7 @@ export async function createRangeWithUser(data: CreateRangeData): Promise<Create
       user: user || undefined
     }
   } catch (error) {
-    console.error('Database query error in createRangeWithUser:', error)
+    console.error('Database query error in createRangeWithUser:', error instanceof Error ? error.message : 'Unknown error')
 
     if (error instanceof Error) {
       console.error('Error details:', {
