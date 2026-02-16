@@ -139,7 +139,7 @@ export function getUpgradeMessage(info: SubscriptionInfo): string {
     return 'Contact us to set up your full account and subscription to start updating your range status.'
   }
   if (info.isTrial && info.isExpired) {
-    return 'Your free trial has expired. Contact us to continue with a paid subscription.'
+    return 'Are you the range owner? Claim access to offer real time range updates.'
   }
   if (info.isPastDue) {
     return 'Your subscription is past due. Please update your payment to continue service.'

@@ -617,6 +617,48 @@ export default function EditRangeClient({ range: initialRange }: EditRangeClient
                     </button>
                   </div>
                 )}
+
+                {/* Admin Cancellation Controls - show for active subscriptions */}
+                {(subscriptionInfo.isActive || subscriptionInfo.isTrial || subscriptionInfo.isPaid) && !subscriptionInfo.isCanceled && (
+                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-semibold text-red-800 mb-2">Cancel Subscription</h4>
+                    <p className="text-sm text-red-700 mb-3">
+                      Cancel this range's subscription. This will immediately cancel their Stripe subscription and revoke access.
+                      {range.stripeSubscriptionId ? ` Stripe subscription ${range.stripeSubscriptionId} will be canceled.` : ''}
+                    </p>
+                    <button
+                      onClick={async () => {
+                        const confirmMessage = `Are you sure you want to cancel the subscription for "${range.name}"? This will immediately cancel their Stripe subscription and revoke access.`
+
+                        if (confirm(confirmMessage)) {
+                          try {
+                            setLoading(true)
+                            const response = await fetch(`/api/admin/ranges/${range.id}/cancel-subscription`, {
+                              method: 'POST'
+                            })
+
+                            if (response.ok) {
+                              const result = await response.json()
+                              alert(result.message || 'Subscription canceled successfully')
+                              window.location.reload()
+                            } else {
+                              const errorData = await response.json()
+                              alert('Failed to cancel subscription: ' + (errorData.error || 'Unknown error'))
+                            }
+                          } catch (error) {
+                            alert('Error canceling subscription')
+                          } finally {
+                            setLoading(false)
+                          }
+                        }
+                      }}
+                      disabled={loading}
+                      className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {loading ? 'Canceling...' : 'Cancel Subscription'}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

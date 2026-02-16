@@ -123,15 +123,22 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const rangeId = subscription.metadata?.rangeId
 
   if (rangeId) {
+    // When subscription is deleted/canceled, update the database
+    // Keep the stripe IDs for audit trail, but mark as canceled
+    const canceledAt = subscription.canceled_at
+      ? new Date(subscription.canceled_at * 1000)
+      : new Date() // Fallback to current time if canceled_at is null
+
     await updateRangeSubscription(rangeId, {
-      subscriptionType: 'trial',
       subscriptionStatus: 'canceled',
-      subscriptionExpiry: new Date(),
-      stripeCustomerId: null,
-      stripeSubscriptionId: null
+      subscriptionExpiry: canceledAt, // Set expiry to cancellation date
+      canceledAt: canceledAt,
+      // Keep Stripe IDs for reference - don't null them
+      stripeCustomerId: subscription.customer as string,
+      stripeSubscriptionId: subscription.id
     })
 
-    console.log(`Subscription cancelled for range ${rangeId}`)
+    console.log(`Subscription ${subscription.id} canceled for range ${rangeId} at ${canceledAt.toISOString()}`)
   }
 }
 

@@ -772,6 +772,9 @@ export async function updateRangeSubscription(rangeId: string, subscriptionData:
     if (subscriptionData.subscriptionExpiry !== undefined) {
       updateData.subscriptionExpiry = subscriptionData.subscriptionExpiry?.toISOString() || null
     }
+    if (subscriptionData.canceledAt !== undefined) {
+      updateData.canceledAt = subscriptionData.canceledAt?.toISOString() || null
+    }
     if (subscriptionData.stripeCustomerId !== undefined) {
       updateData.stripecustomerid = subscriptionData.stripeCustomerId
     }
